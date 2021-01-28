@@ -1,2 +1,2 @@
 # cocktailmachine
-Software repository for a raspberry pi based cocktail maschine.
+Software project for a raspberry pi based cocktail machine.
