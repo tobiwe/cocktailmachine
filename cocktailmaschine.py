@@ -11,75 +11,8 @@ config = {
     "a1": "tonic water"
 }
 
-drinks = [
-    {
-    "name":"Gin Tonic",
-    "ingredients": [
-      { "unit": "cl",
-        "amount": 6,
-        "ingredient": "gin" },
-      { "unit": "cl",
-        "amount": 12,
-        "ingredient": "tonic water" }
-    ]},
-    {
-    "name":"Caipirinha",
-    "ingredients": [
-      { "unit": "cl",
-        "amount": 6,
-        "ingredient": "cachasa" },
-      { "unit": "cl",
-        "amount": 2,
-        "ingredient": "lemon juice" }
-    ]
-    },
-    {
-    "name":"Moscow Mule",
-    "ingredients": [
-      { "unit": "cl",
-        "amount": 5,
-        "ingredient": "vodka" },
-      { "unit": "cl",
-        "amount": 15,
-        "ingredient": "ginger beer" }
-    ]
-    },
-    {
-    "name":"Virgin Gin Tonic",
-    "ingredients": [
-      { "unit": "cl",
-        "amount": 15,
-        "ingredient": "soda" },
-      { "unit": "cl",
-        "amount": 5,
-        "ingredient": "lime juce" }
-    ]},
-    {
-    "name":"Vigin Caipirinha",
-    "ingredients": [
-      { "unit": "cl",
-        "amount": 18,
-        "ingredient": "ginger ale" },
-      { "unit": "cl",
-        "amount": 6,
-        "ingredient": "maracuja juice" }
-    ]
-    },
-    {
-    "name":"Virgin Moscow Mule",
-    "ingredients": [
-      { "unit": "cl",
-        "amount": 20,
-        "ingredient": "ginger beer" },
-      { "unit": "cl",
-        "amount": 5,
-        "ingredient": "soda" },
-      { "unit": "cl",
-        "amount": 3,
-        "ingredient": "lemon juce" }
-    ]
-    }
-]
+drinkFile = open("drinks.json", "r")
+drinks = json.load(drinkFile)
 
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using :0.0')
