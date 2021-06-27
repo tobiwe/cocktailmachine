@@ -45,11 +45,23 @@ void Waage::setup()
 
 float Waage::getValue()
 {
+  return currentValue;
 
-  LoadCell.update();
-  float i = LoadCell.getData();
-  return i;
+}
 
+bool Waage::update()
+{
+    bool newData = false;
+  if(LoadCell.update())
+  {
+    newData = true;
+  }
+
+  if(newData)
+  {
+    this->currentValue = LoadCell.getData();
+  }
+  return LoadCell.update();
 }
 
 void Waage::tare()

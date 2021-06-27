@@ -6,8 +6,12 @@
 
 class Waage
 {
+  private:
+    float currentValue;
+  
   public:
     void setup();
+    bool update();
     float getValue();
     void calibrate();
     void tare();

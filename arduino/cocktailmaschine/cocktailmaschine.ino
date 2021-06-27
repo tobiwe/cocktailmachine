@@ -71,6 +71,8 @@ void loop() {
   char command[20];
   bool newSerialEvent = false;
 
+  waage.update();
+  
   while (Serial.available()) {
     char inChar = (char)Serial.read();
     if (inChar == 0x02) {
