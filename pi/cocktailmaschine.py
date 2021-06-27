@@ -34,7 +34,20 @@ root = Tk()
 #root.config(cursor="none", background="black")
 root.geometry("1024x576")
 root.wm_title('Cocktail-Maschine')
-#root.attributes('-fullscreen', True)
+root.attributes('-fullscreen', True)
+
+  
+# Add image file
+bg = PhotoImage(file = 'background.gif')
+bg = bg.subsample(4,4)
+
+transparent = PhotoImage(file = 'transparent.png')
+  
+# Show image using label
+label1 = Label( root, image = bg)
+label1.place(x = 0, y = 0)
+
+
 
 Grid.rowconfigure(root, 0, weight=1)
 Grid.rowconfigure(root, 1, weight=1)
@@ -67,6 +80,12 @@ def getPump(neededIngredient):
 
     return list
 
+def calibrate():
+    print("Calibrate")
+
+def tare():
+    print("Tare")
+
 
 myFont = tkFont.Font(size=16)
 
@@ -74,20 +93,74 @@ rowNumber = 0
 columnNumber = 0
 number = 0
 
+myWindow = 0
+isFinished = False
+percent = 0
+
 def testThread():
-    time.sleep(1)
-    print("Test")
+    global percent
+    
+    for i in range(10):
+        percent = percent + 10
+        time.sleep(0.2)
 
+    global isFinished 
+    isFinished = True
+    percent = 0
+    
 def NewWindow(order):
-    window = Toplevel()
+    window = Toplevel(root)
     window.geometry('150x150')
-    newlabel = Label(window, text = "Cocktail Produktion" + order["name"])
-    newlabel.pack()
+    label = Label(window, text = "Cocktail Produktion" + order["name"])
+    label.pack()
 
+    window.after(100, updateValue, window, label)
     thread1 = threading.Thread(target = testThread)
     thread1.start()
 
-  
+    window.attributes('-fullscreen', True)
+
+
+
+def updateValue(window, label):
+    print("Check finisehd")
+    global isFinished 
+    if isFinished:
+        window.destroy()
+        print("Finsehd true")
+        isFinished = False
+    else:
+        labelText = "Percent " + str(percent)
+        label.configure(text=labelText)
+        window.after(100, updateValue, window, label)
+        print("Finsehd false")
+
+def SettingsWindow():
+    window = Toplevel()
+    window.geometry("1024x576")
+    window.wm_title('Settings')
+    #root.attributes('-fullscreen', True)
+
+    Grid.rowconfigure(window, 0, weight=1)
+    Grid.rowconfigure(window, 1, weight=1)
+
+    Grid.columnconfigure(window, 0, weight=1)
+    Grid.columnconfigure(window, 1, weight=1)
+
+
+    CalibrateButton = Button(window, font=myFont, text="Calibrate", bg="#ee0000", activebackground="#ee0000", command=calibrate)
+    CalibrateButton.grid(row= 0, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
+    TareButton = Button(window, font=myFont, text="Tare", bg="#ee0000", activebackground="#ee0000", command=tare)
+    TareButton.grid(row= 0, column=1, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+   
+    BackButton = Button(window, font=myFont, text="Back", bg="#ee0000", activebackground="#ee0000", command=window.destroy)
+    BackButton.grid(row= 1, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+    ExitButton = Button(window, font=myFont, text="Exit", bg="#ee0000", activebackground="#ee0000", command=buttonExitClicked)
+    ExitButton.grid(row= 1, column=1, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
+    window.attributes('-fullscreen', True)
+
 for drink in drinks:
 
     buttonText = drinks[number]["name"] + "\n("
@@ -96,7 +169,10 @@ for drink in drinks:
             buttonText += ", "
         buttonText += ingredient["ingredient"]
     buttonText +=")"
-    drinkButton = Button(root, text=buttonText, bg="#00ee00", activebackground="#00ee00", command= lambda drink=drink: buttonClicked(drink), width=10)
+    
+    drinkButton = Button(root, text=buttonText, bg="#ffffff", activebackground="#ffffff", compound="center",command= lambda drink=drink: buttonClicked(drink), width=10)
+    drinkButton['font'] = myFont
+    drinkButton.grid(row=rowNumber, column=columnNumber, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
 
     drinkButton['font'] = myFont
     drinkButton.grid(row=rowNumber, column=columnNumber, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
@@ -109,6 +185,7 @@ for drink in drinks:
       columnNumber = 0
 
 
-ExitButton = Button(root, font=myFont, text="Exit", bg="#ee0000", activebackground="#ee0000", command=buttonExitClicked)
-ExitButton.grid(row= 2, column=2, padx=10, pady=10, ipadx=10, ipady=10, sticky="nesw")
+SettingsButton = Button(root, font=myFont, text="Settings", bg="#ffffff", activebackground="#ffffff", command=SettingsWindow)
+SettingsButton.grid(row= 2, column=2, padx=10, pady=10, ipadx=10, ipady=10, sticky="nesw")
+#root.attributes('-alpha', 0.5)
 root.mainloop()
