@@ -10,6 +10,7 @@ class Waage
     void setup();
     float getValue();
     void calibrate();
+    void tare();
 };
 
 #endif

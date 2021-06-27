@@ -52,6 +52,11 @@ float Waage::getValue()
 
 }
 
+void Waage::tare()
+{
+   LoadCell.tareNoDelay();
+}
+
 void Waage::calibrate()
 {
   Serial.println("***");

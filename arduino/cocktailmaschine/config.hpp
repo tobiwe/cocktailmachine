@@ -6,7 +6,7 @@ enum Type { PERISTALIC, AIR};
 #define BAUDRATE 9600
 
 #define LED_PIN 48
-#define LED_COUNT 12//13
+#define LED_COUNT 13
 
 #define MOTOR1_In1 22
 #define MOTOR1_In2 23

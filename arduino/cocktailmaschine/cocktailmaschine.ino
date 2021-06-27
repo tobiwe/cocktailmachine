@@ -89,7 +89,7 @@ void loop() {
   if (newSerialEvent)
   {
     int program = getValue(command, ' ', 0);
-    int motor, motorSpeed, ventil, state, pumpe, amaount, ledShow, wait, r, g, b;
+    int motor, motorSpeed, ventil, state, pumpe, amaount, ledShow, wait, r, g, b, sub;
     switch (program)
     {
       case 1:
@@ -122,9 +122,22 @@ void loop() {
         fillGlas(pumpen[pumpe - 1], amaount);
         break;
       case 5:
-        //Serial.print(0x02);
-        Serial.println(waage.getValue());
-        //Serial.print(0x03);
+        sub =  getValue(command, ' ', 1);
+        if(sub == 1)
+        {
+            Serial.println(waage.getValue());
+        }
+
+        else if(sub==2)
+        {
+           waage.tare();
+        }
+
+        else if(sub==3)
+        {
+          waage.calibrate();
+        }
+      
         break;
       case 6:
         ledShow = getValue(command, ' ', 1);
@@ -159,11 +172,6 @@ void loop() {
           b = getValue(command, ' ', 5);
           ledstripe.colorWipe(strip.Color(r, g, b),wait);
         }
-
-        break;
-
-      case 7:
-        waage.calibrate();
         break;
       default:
         //do nothing
