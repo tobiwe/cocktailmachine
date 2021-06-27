@@ -23,10 +23,10 @@ Ventil ventile[4] = {
 
 Pumpe p1(PERISTALIC, MOTOR1_In1, MOTOR1_In2, MOTOR1_En, peristalicLed[0], bottleLed[0], false);
 Pumpe p2(PERISTALIC, MOTOR2_In1, MOTOR2_In2, MOTOR2_En, peristalicLed[1], bottleLed[1], false);
-Pumpe p3(PERISTALIC, MOTOR3_In1, MOTOR3_In2, MOTOR3_En, peristalicLed[2], bottleLed[2], false);
-Pumpe p4(PERISTALIC, MOTOR4_In1, MOTOR4_In2, MOTOR4_En, peristalicLed[3], bottleLed[3], false);
+Pumpe p3(PERISTALIC, MOTOR3_In1, MOTOR3_In2, MOTOR3_En, peristalicLed[2], bottleLed[2], true);
+Pumpe p4(PERISTALIC, MOTOR4_In1, MOTOR4_In2, MOTOR4_En, peristalicLed[3], bottleLed[3], true);
 Pumpe p5(PERISTALIC, MOTOR5_In1, MOTOR5_In2, MOTOR5_En, peristalicLed[4], bottleLed[4], false);
-Pumpe p6(PERISTALIC, MOTOR6_In1, MOTOR6_In2, MOTOR6_En, peristalicLed[5], bottleLed[5], false);
+Pumpe p6(PERISTALIC, MOTOR6_In1, MOTOR6_In2, MOTOR6_En, peristalicLed[5], bottleLed[5], true);
 Luftpumpe a1(AIR, MOTOR7_In1, MOTOR7_In2, MOTOR7_En, airLed[0], airLed[0], ventile[0], false);
 Luftpumpe a2(AIR, MOTOR8_In1, MOTOR8_In2, MOTOR8_En, airLed[1], airLed[1], ventile[1], false);
 Luftpumpe a3(AIR, MOTOR9_In1, MOTOR9_In2, MOTOR9_En, airLed[2], airLed[2], ventile[2], false);
@@ -58,7 +58,7 @@ void setup() {
   {
     v.setup();
     v.open();
-    delay(1000);
+    delay(200);
     v.close();
     delay(1000);
   }
@@ -115,6 +115,7 @@ void loop() {
         state = getValue(command, ' ', 2);
         if (state == 1)ventile[ventil].open();
         else if (state == 0) ventile[ventil].close();
+        break;
       case 4:
         pumpe = getValue(command, ' ', 1);
         amaount = getValue(command, ' ', 2);
@@ -147,7 +148,7 @@ void loop() {
           r = getValue(command, ' ', 3);
           g = getValue(command, ' ', 4);
           b = getValue(command, ' ', 5);
-          ledstripe.theaterChase(wait, strip.Color(r, g, b));
+          ledstripe.theaterChase(strip.Color(r, g, b),wait);
         }
 
         else if (ledShow == 4)
@@ -156,7 +157,7 @@ void loop() {
           r = getValue(command, ' ', 3);
           g = getValue(command, ' ', 4);
           b = getValue(command, ' ', 5);
-          ledstripe.colorWipe(wait, strip.Color(r, g, b));
+          ledstripe.colorWipe(strip.Color(r, g, b),wait);
         }
 
         break;

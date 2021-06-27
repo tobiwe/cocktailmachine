@@ -6,31 +6,31 @@ enum Type { PERISTALIC, AIR};
 #define BAUDRATE 9600
 
 #define LED_PIN 48
-#define LED_COUNT 13
+#define LED_COUNT 12//13
 
 #define MOTOR1_In1 22
 #define MOTOR1_In2 23
 #define MOTOR1_En 2
 
-#define MOTOR2_In1 24
-#define MOTOR2_In2 25
-#define MOTOR2_En 3
+#define MOTOR2_In1 26
+#define MOTOR2_In2 27
+#define MOTOR2_En 4
 
-#define MOTOR3_In1 26
-#define MOTOR3_In2 27
-#define MOTOR3_En 4
+#define MOTOR3_In1 24
+#define MOTOR3_In2 25
+#define MOTOR3_En 3
 
-#define MOTOR4_In1 28
-#define MOTOR4_In2 29
-#define MOTOR4_En 5
+#define MOTOR4_In1 32
+#define MOTOR4_In2 33
+#define MOTOR4_En 7
 
 #define MOTOR5_In1 30
 #define MOTOR5_In2 31
 #define MOTOR5_En 6
 
-#define MOTOR6_In1 32
-#define MOTOR6_In2 33
-#define MOTOR6_En 7
+#define MOTOR6_In1 28
+#define MOTOR6_In2 29
+#define MOTOR6_En 5
 
 #define MOTOR7_In1 34
 #define MOTOR7_In2 35
