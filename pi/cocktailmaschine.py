@@ -26,6 +26,7 @@ def refillButtonClicked(window):
 def settingsButtonClicked():
     window = Toplevel()
     window.geometry("1024x576")
+    window.resizable(0, 0)
     window.wm_title('Settings')
     #root.attributes('-fullscreen', True)
 
@@ -71,6 +72,7 @@ def openRefillWindow(ingredient):
 def openPrductionWindow(order):
     window = Toplevel()
     window.geometry('1024x576')
+    window.resizable(0, 0)
     window.focus_force()
     heading = Label(window, text = "Cocktail Produktion", font=myFont)
     drink = Label(window, text =  order["name"], font=myFont)
@@ -195,6 +197,12 @@ def receiveCommand():
     print(line)
     return line
 
+def createButton(x, y):
+    label = canvas.create_text((x,y),text=buttonText, font=myFont)
+    drinkButton = canvas.create_image((x,y), image=transparent)
+    event = '<Button-1>'
+    canvas.tag_bind(drinkButton, event, lambda e, mydrink=drink: orderButtonClicked(mydrink))
+
 config = {
     "p1": "havana",
     "p2": "vodka",
@@ -222,39 +230,39 @@ if os.environ.get('DISPLAY','') == '':
 root = Tk()
 #root.config(cursor="none", background="black")
 root.geometry("1024x576")
+root.resizable(0, 0)
 root.wm_title('Cocktail-Maschine')
 root.focus_force()
 #root.attributes('-fullscreen', True)
-  
+ 
 # load background image
-bg = PhotoImage(file = 'background.gif')
-bg = bg.subsample(4,4)
+bg = PhotoImage(file = 'background.png')
 
 transparent = PhotoImage(file = 'transparent.png')
-  
+
+canvas = Canvas(root, width=1024, height=576, highlightthickness=0)
+
+#Grid.rowconfigure(root, 0, weight=1)
+#Grid.rowconfigure(root, 1, weight=1)
+#Grid.rowconfigure(root, 2, weight=1)
+
+#Grid.columnconfigure(root, 0, weight=1)
+#Grid.columnconfigure(root, 1, weight=1)
+#Grid.columnconfigure(root, 2, weight=1)
 # Show image using label
-label1 = Label( root, image = bg)
-label1.place(x = 0, y = 0)
-
-Grid.rowconfigure(root, 0, weight=1)
-Grid.rowconfigure(root, 1, weight=1)
-Grid.rowconfigure(root, 2, weight=1)
-
-Grid.columnconfigure(root, 0, weight=1)
-Grid.columnconfigure(root, 1, weight=1)
-Grid.columnconfigure(root, 2, weight=1)
-
+backgrouundCanvas =canvas.create_image(0,0,anchor="nw",image=bg)
 
 myFont = tkFont.Font(size=16)
 
 rowNumber = 0
-columnNumber = 0
+columnNumber = 0 
 number = 0
 
 myWindow = 0
 isFinished = False
 percent = 0
 refill = False
+index = 1
 
 for drink in drinks:
 
@@ -265,12 +273,22 @@ for drink in drinks:
         buttonText += ingredient["ingredient"]
     buttonText +=")"
     
-    drinkButton = Button(root, text=buttonText, bg="#ffffff", activebackground="#ffffff", compound="center",command= lambda drink=drink: orderButtonClicked(drink), width=10)
-    drinkButton['font'] = myFont
-    drinkButton.grid(row=rowNumber, column=columnNumber, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+   # drinkButton = Button(root, text=buttonText, image=transparent,bd=0, compound="center",command= lambda drink=drink: orderButtonClicked(drink))
+   # drinkButton['font'] = myFont
 
-    drinkButton['font'] = myFont
-    drinkButton.grid(row=rowNumber, column=columnNumber, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
+
+    createButton(204+308*columnNumber, 186+204*rowNumber)
+   
+    
+  
+
+    
+    #drinkButton.grid(row=rowNumber, column=columnNumber, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
+    
+
+
     number+=1
     columnNumber+=1
 
@@ -279,9 +297,12 @@ for drink in drinks:
       rowNumber+=1
       columnNumber = 0
 
+    index+=1
 
-SettingsButton = Button(root, font=myFont, text="Settings", bg="#ffffff", activebackground="#ffffff", command=settingsButtonClicked)
-SettingsButton.grid(row= 2, column=2, padx=10, pady=10, ipadx=10, ipady=10, sticky="nesw")
+    canvas.place(x = 0, y = 0)
+
+#SettingsButton = Button(root, font=myFont, text="Settings", image = transparent, command=settingsButtonClicked)
+#SettingsButton.grid(row= 2, column=2, padx=10, pady=10, ipadx=10, ipady=10, sticky="nesw")
 
 #root.attributes('-alpha', 0.5)
 root.mainloop()
