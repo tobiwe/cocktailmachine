@@ -72,7 +72,7 @@ void loop() {
   bool newSerialEvent = false;
 
   waage.update();
-  
+
   while (Serial.available()) {
     char inChar = (char)Serial.read();
     if (inChar == 0x02) {
@@ -125,21 +125,21 @@ void loop() {
         break;
       case 5:
         sub =  getValue(command, ' ', 1);
-        if(sub == 1)
+        if (sub == 1)
         {
-            Serial.println(waage.getValue());
+          Serial.println(waage.getValue());
         }
 
-        else if(sub==2)
+        else if (sub == 2)
         {
-           waage.tare();
+          waage.tare();
         }
 
-        else if(sub==3)
+        else if (sub == 3)
         {
           waage.calibrate();
         }
-      
+
         break;
       case 6:
         ledShow = getValue(command, ' ', 1);
@@ -163,7 +163,7 @@ void loop() {
           r = getValue(command, ' ', 3);
           g = getValue(command, ' ', 4);
           b = getValue(command, ' ', 5);
-          ledstripe.theaterChase(strip.Color(r, g, b),wait);
+          ledstripe.theaterChase(strip.Color(r, g, b), wait);
         }
 
         else if (ledShow == 4)
@@ -172,7 +172,7 @@ void loop() {
           r = getValue(command, ' ', 3);
           g = getValue(command, ' ', 4);
           b = getValue(command, ' ', 5);
-          ledstripe.colorWipe(strip.Color(r, g, b),wait);
+          ledstripe.colorWipe(strip.Color(r, g, b), wait);
         }
         break;
       default:
@@ -300,38 +300,28 @@ void fillGlas(Pumpe *pumpe, int amount)
       ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
 
       interval = 5000;
-      while (waage.getValue() > 5)
+
+
+      while (refill)
       {
+
+        //Blink here
         ledstripe.setLed(pumpe->bottleLed, strip.Color(255, 0, 0));
         delay(250);
         ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
         delay(250);
 
-      }
-
-      ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
-      ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
-
-      while (waage.getValue() < 5)
-      {
-        for (int i = 0; i <= 255; i++)
+        if (Serial.available())
         {
-          ledstripe.setLed(pumpe->bottleLed, strip.Color(i, i, i));
-          delay(1);
-          ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
-          delay(1);
-        }
-        for (int i = 0; i <= 255; i++)
-        {
-          ledstripe.setLed(pumpe->bottleLed, strip.Color(255 - i, 255 - i, 255 - i));
-          delay(1);
-          ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
-          delay(1);
+          String test = Serial.readString();
+          if (test == "done\n")
+          {
+            refill = false;
+          }
         }
       }
 
       startTime = millis();
-      refill = false;
       lastTime = startTime;
     }
     if (loadCell >= goalValue) finished = true;
