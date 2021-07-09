@@ -62,7 +62,12 @@ def openRefillWindow(ingredient):
     window = Toplevel()
     window.geometry('1024x576')
     window.focus_force()
-    label = Label(window, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")! Ruf schnell den Cocktail-Butler! Er kann dir helfen!", font=myFont)
+
+    canvas = Canvas(window, width=1024, height=576, highlightthickness=0)
+    backgrouundCanvas =canvas.create_image(0,0,anchor="nw",image=buttler)
+    canvas.place(x = 0, y = 0)
+
+    label = Label(window, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\n Ruf schnell den Cocktail-Butler!\n Er kann dir helfen!\n", font=myFont)
     label.pack()
 
     refillButton = Button(window, font=myFont, text="Flasche aufgefüllt", bg="#ee0000", activebackground="#ee0000", command=lambda window=window: refillButtonClicked(window))
@@ -70,20 +75,25 @@ def openRefillWindow(ingredient):
 
 
 def openPrductionWindow(order):
-    window = Toplevel()
-    window.geometry('1024x576')
-    window.resizable(0, 0)
-    window.focus_force()
-    heading = Label(window, text = "Cocktail Produktion", font=myFont)
-    drink = Label(window, text =  order["name"], font=myFont)
-    process = Label(window, text =  "Start", font=myFont)
+    productionWindow = Toplevel()
+    productionWindow.geometry('1024x576')
+    productionWindow.resizable(0, 0)
+    productionWindow.focus_force()
+
+    productionCanvas = Canvas(productionWindow, width=1024, height=576, highlightthickness=0)
+    productionCanvas.create_image(0,0,anchor="nw",image=production)
+    productionCanvas.place(x = 0, y = 0)
+   
+    heading = Label(productionWindow, text = "Cocktail Produktion", font=myFont)
+    drink = Label(productionWindow, text =  order["name"], font=myFont)
+    process = Label(productionWindow, text =  "Start", font=myFont)
     
     heading.pack()
     drink.pack()
     process.pack()
 
-    window.after(100, updateValue, window, process)
-    thread = threading.Thread(target = updateProductionWindow, args=(order,window))
+    productionWindow.after(100, updateValue, productionWindow, process)
+    thread = threading.Thread(target = updateProductionWindow, args=(order,productionWindow))
     thread.start()
    # window.attributes('-fullscreen', True)
 
@@ -198,8 +208,8 @@ def receiveCommand():
     return line
 
 def createButton(x, y):
-    label = canvas.create_text((x,y),text=buttonText, font=myFont)
     drinkButton = canvas.create_image((x,y), image=transparent)
+    label = canvas.create_text((x,y),text=buttonText, font=myFont, fill="white")
     event = '<Button-1>'
     canvas.tag_bind(drinkButton, event, lambda e, mydrink=drink: orderButtonClicked(mydrink))
 
@@ -237,22 +247,16 @@ root.focus_force()
  
 # load background image
 bg = PhotoImage(file = 'background.png')
-
 transparent = PhotoImage(file = 'transparent.png')
+production = PhotoImage(file = 'production.png')
+settings = PhotoImage(file='settings.png')
+buttler = PhotoImage(file='buttler.png')
+
 
 canvas = Canvas(root, width=1024, height=576, highlightthickness=0)
-
-#Grid.rowconfigure(root, 0, weight=1)
-#Grid.rowconfigure(root, 1, weight=1)
-#Grid.rowconfigure(root, 2, weight=1)
-
-#Grid.columnconfigure(root, 0, weight=1)
-#Grid.columnconfigure(root, 1, weight=1)
-#Grid.columnconfigure(root, 2, weight=1)
-# Show image using label
 backgrouundCanvas =canvas.create_image(0,0,anchor="nw",image=bg)
 
-myFont = tkFont.Font(size=16)
+myFont = tkFont.Font(size=24, family="Franklin Gothic Medium")
 
 rowNumber = 0
 columnNumber = 0 
@@ -266,21 +270,20 @@ index = 1
 
 for drink in drinks:
 
-    buttonText = drinks[number]["name"] + "\n("
-    for ingredient in drink["ingredients"]:
-        if ingredient != drink["ingredients"][0]:
-            buttonText += ", "
-        buttonText += ingredient["ingredient"]
-    buttonText +=")"
+    buttonText = drinks[number]["name"] #+ "\n("
+ #   for ingredient in drink["ingredients"]:
+      #  if ingredient != drink["ingredients"][0]:
+            #buttonText += ", "
+        #buttonText += ingredient["ingredient"]
+   # buttonText +=")"
     
    # drinkButton = Button(root, text=buttonText, image=transparent,bd=0, compound="center",command= lambda drink=drink: orderButtonClicked(drink))
    # drinkButton['font'] = myFont
 
 
 
-    createButton(204+308*columnNumber, 186+204*rowNumber)
-   
-    
+    #createButton(204+308*columnNumber, 186+204*rowNumber)
+    createButton(194+318*columnNumber, 181+214*rowNumber)
   
 
     
@@ -303,6 +306,10 @@ for drink in drinks:
 
 #SettingsButton = Button(root, font=myFont, text="Settings", image = transparent, command=settingsButtonClicked)
 #SettingsButton.grid(row= 2, column=2, padx=10, pady=10, ipadx=10, ipady=10, sticky="nesw")
+
+settingsButton = canvas.create_image((1014,566), anchor="se", image=settings)
+event = '<Button-1>'
+canvas.tag_bind(settingsButton, event, lambda e: settingsButtonClicked())
 
 #root.attributes('-alpha', 0.5)
 root.mainloop()
