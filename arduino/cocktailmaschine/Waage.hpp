@@ -14,6 +14,7 @@ class Waage
     bool update();
     float getValue();
     void calibrate();
+    void calibrate(float);
     void tare();
 };
 

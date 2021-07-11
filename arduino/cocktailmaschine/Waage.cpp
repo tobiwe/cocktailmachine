@@ -51,13 +51,13 @@ float Waage::getValue()
 
 bool Waage::update()
 {
-    bool newData = false;
-  if(LoadCell.update())
+  bool newData = false;
+  if (LoadCell.update())
   {
     newData = true;
   }
 
-  if(newData)
+  if (newData)
   {
     this->currentValue = LoadCell.getData();
   }
@@ -66,7 +66,25 @@ bool Waage::update()
 
 void Waage::tare()
 {
-   LoadCell.tareNoDelay();
+  LoadCell.tareNoDelay();
+}
+
+void Waage::calibrate(float known_mass)
+{
+  //Update loadCell for one secnd
+  LoadCell.update();
+
+  LoadCell.refreshDataSet(); //refresh the dataset to be sure that the known mass is measured correct
+  float newCalibrationValue = LoadCell.getNewCalibration(known_mass); //get the new calibration value
+
+#if defined(ESP8266)|| defined(ESP32)
+  EEPROM.begin(512);
+#endif
+  EEPROM.put(calVal_eepromAdress, newCalibrationValue);
+#if defined(ESP8266)|| defined(ESP32)
+  EEPROM.commit();
+#endif
+  EEPROM.get(calVal_eepromAdress, newCalibrationValue);
 }
 
 void Waage::calibrate()

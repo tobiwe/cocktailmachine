@@ -1,10 +1,10 @@
 /***
- * 
- * Test Dummy
- * This file is just for testing purpouse
- * It recieves comannds for filling a glas and responses within a random time with "refill" or "finish"
- * In refill mode the program waits for ar "done" command to continue
- */
+
+   Test Dummy
+   This file is just for testing purpouse
+   It recieves comannds for filling a glas and responses within a random time with "refill" or "finish"
+   In refill mode the program waits for ar "done" command to continue
+*/
 
 void setup() {
 
@@ -44,10 +44,10 @@ void fillTest()
   Serial.write(0x03);
 }
 
-int getValue(String data, char separator, int index)
+float getValue(String data, char separator, int index)
 {
   int found = 0;
-  int strIndex[] = {0, -1};
+  int strIndex[] = { 0, -1 };
   int maxIndex = data.length() - 1;
 
   for (int i = 0; i <= maxIndex && found <= index; i++) {
@@ -57,7 +57,9 @@ int getValue(String data, char separator, int index)
       strIndex[1] = (i == maxIndex) ? i + 1 : i;
     }
   }
-  return found > index ? data.substring(strIndex[0], strIndex[1]).toInt() : 0;
+
+  String sub = data.substring(strIndex[0], strIndex[1]);
+  return found > index ? sub.toFloat() : 0;
 }
 
 void loop() {
@@ -85,16 +87,25 @@ void loop() {
   {
 
     int program = getValue(command, ' ', 0);
-    int motor, motorSpeed, ventil, state, pumpe, amaount, ledShow, wait, r, g, b, sub;
+    float amount;
+    int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub;
 
     switch (program)
     {
       case 4:
         pumpe = getValue(command, ' ', 1);
-
-        amaount = getValue(command, ' ', 2);
+        amount = getValue(command, ' ', 2);
 
         fillTest();
+        break;
+      case 5:
+        float randNumber = random(1, 350);
+        bool refill = false;
+        delay(10);
+
+        Serial.write(0x02);
+        Serial.print(randNumber);
+        Serial.write(0x03);
 
         break;
       default:

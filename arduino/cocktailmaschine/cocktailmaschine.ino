@@ -45,12 +45,10 @@ void setup() {
     if (p->getType() == PERISTALIC)
     {
       p->setSpeed(255);
-      Serial.print("PER");
     }
     else
     {
       p->setSpeed(255);
-      Serial.print("AIR");
     }
   }
 
@@ -91,7 +89,7 @@ void loop() {
   if (newSerialEvent)
   {
     int program = getValue(command, ' ', 0);
-    float amount;
+    float amount, mass;
     int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub;
     switch (program)
     {
@@ -128,7 +126,9 @@ void loop() {
         sub =  getValue(command, ' ', 1);
         if (sub == 1)
         {
-          Serial.println(waage.getValue());
+          Serial.write(0x02);
+          Serial.print(waage.getValue());
+          Serial.write(0x03);
         }
 
         else if (sub == 2)
@@ -137,6 +137,12 @@ void loop() {
         }
 
         else if (sub == 3)
+        {
+          mass = getValue(command, ' ', 2);
+          waage.calibrate(mass);
+        }
+
+        else if (sub == 4)
         {
           waage.calibrate();
         }

@@ -101,6 +101,17 @@ def openPrductionWindow(order):
 def updateProductionWindow(order, window):
     global percent
 
+    percent = "Waiting for glas"
+    weight = 0
+
+    while weight<300:
+        sendCommand("5 1")
+        waitForAnser = True
+        answer = receiveCommand()
+        weight = float(answer)
+        print("Gewicht: " + str(weight))
+
+
     for ingredient in order["ingredients"]:
         pumps = getPump(ingredient["ingredient"])
         percent = (" --> " + str(ingredient["amount"]) + ingredient ["unit"] + " " + ingredient["ingredient"] + " (" + str(pumps) + ")")
@@ -172,11 +183,11 @@ def updateValue(window, process):
 ### arduino commands
 def calibrate():
     print("Calibrate")
-    sendCommand(b"5 2")
+    sendCommand("5 3 302.00")
 
 def tare():
     print("Tare")
-    sendCommand(b"5 3")
+    sendCommand("5 2")
 
 def sendString(command):
     ser.write(command.encode())
@@ -203,7 +214,6 @@ def receiveCommand():
             elif started:
                 line+=chr(character)
            
-
     print(line)
     return line
 
@@ -231,7 +241,7 @@ drinks = json.load(drinkFile)
 
 
 
-ser = serial.Serial("COM3", 9600)
+ser = serial.Serial("COM4", 9600)
 
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using :0.0')
