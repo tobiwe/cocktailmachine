@@ -32,13 +32,13 @@ enum Type { PERISTALIC, AIR};
 #define MOTOR6_In2 29
 #define MOTOR6_En 5
 
-#define MOTOR7_In1 34
-#define MOTOR7_In2 35
-#define MOTOR7_En 8
+#define MOTOR7_In1 36
+#define MOTOR7_In2 37
+#define MOTOR7_En 9
 
-#define MOTOR8_In1 36
-#define MOTOR8_In2 37
-#define MOTOR8_En 9
+#define MOTOR8_In1 34
+#define MOTOR8_In2 35
+#define MOTOR8_En 8
 
 #define MOTOR9_In1 38
 #define MOTOR9_In2 39
@@ -51,8 +51,8 @@ enum Type { PERISTALIC, AIR};
 #define SERIAL_RX 0
 #define SERIAL_TX 1
 
-#define VENTIL1 42
-#define VENTIL2 43
+#define VENTIL1 43
+#define VENTIL2 42
 #define VENTIL3 44
 #define VENTIL4 45
 

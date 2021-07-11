@@ -58,9 +58,9 @@ void setup() {
   {
     v.setup();
     v.open();
-    delay(200);
+    delay(10);
     v.close();
-    delay(1000);
+    delay(10);
   }
 
   ledstripe.setup();
@@ -91,7 +91,8 @@ void loop() {
   if (newSerialEvent)
   {
     int program = getValue(command, ' ', 0);
-    int motor, motorSpeed, ventil, state, pumpe, amaount, ledShow, wait, r, g, b, sub;
+    float amount;
+    int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub;
     switch (program)
     {
       case 1:
@@ -120,8 +121,8 @@ void loop() {
         break;
       case 4:
         pumpe = getValue(command, ' ', 1);
-        amaount = getValue(command, ' ', 2);
-        fillGlas(pumpen[pumpe - 1], amaount);
+        amount = getValue(command, ' ', 2);
+        fillGlas(pumpen[pumpe - 1], amount);
         break;
       case 5:
         sub =  getValue(command, ' ', 1);
@@ -186,20 +187,22 @@ void loop() {
   // demo();
 }
 
-int getValue(String data, char separator, int index)
+float getValue(String data, char separator, int index)
 {
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length() - 1;
+    int found = 0;
+    int strIndex[] = { 0, -1 };
+    int maxIndex = data.length() - 1;
 
-  for (int i = 0; i <= maxIndex && found <= index; i++) {
-    if (data.charAt(i) == separator || i == maxIndex) {
-      found++;
-      strIndex[0] = strIndex[1] + 1;
-      strIndex[1] = (i == maxIndex) ? i + 1 : i;
+    for (int i = 0; i <= maxIndex && found <= index; i++) {
+        if (data.charAt(i) == separator || i == maxIndex) {
+            found++;
+            strIndex[0] = strIndex[1] + 1;
+            strIndex[1] = (i == maxIndex) ? i+1 : i;
+        }
     }
-  }
-  return found > index ? data.substring(strIndex[0], strIndex[1]).toInt() : 0;
+
+    String sub = data.substring(strIndex[0], strIndex[1]);
+    return found > index ? sub.toFloat() : 0;
 }
 
 /**
@@ -248,7 +251,7 @@ void demo()
   }
 }
 
-void fillGlas(Pumpe *pumpe, int amount)
+void fillGlas(Pumpe *pumpe, float amount)
 {
   delay(1000);
   long startTime = millis();
@@ -257,13 +260,14 @@ void fillGlas(Pumpe *pumpe, int amount)
   float oldValue = loadCell;
   bool finished = false;
   bool refill = false;
-  int startValue = loadCell;
-  int goalValue = startValue + amount;
+  float startValue = loadCell;
+  float goalValue = startValue + amount;
 
   int interval = 3000;
 
   while (loadCell < goalValue)
   {
+    waage.update();
     loadCell = waage.getValue();
     pumpe->forward();
     ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 255));
@@ -274,16 +278,6 @@ void fillGlas(Pumpe *pumpe, int amount)
 
     if (actualTime - lastTime >= interval)
     {
-
-      Serial.print("Actual:");
-      Serial.print(actualTime);
-      Serial.print("Last:");
-      Serial.println(lastTime);
-
-      Serial.print("Old:");
-      Serial.print(oldValue);
-      Serial.print("New:");
-      Serial.println(loadCell);
       if (oldValue + 1 > loadCell)
       {
         refill = true;
@@ -298,6 +292,10 @@ void fillGlas(Pumpe *pumpe, int amount)
       pumpe->stop();
       ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
       ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
+
+      Serial.write(0x02);
+      Serial.print("refill");
+      Serial.write(0x03);
 
       interval = 5000;
 
@@ -334,7 +332,14 @@ void fillGlas(Pumpe *pumpe, int amount)
     pumpe->stop();
     ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
     ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
+
+    Serial.write(0x02);
+    Serial.print("finish");
+    Serial.write(0x03);
     finished = false;
+
+
+
     delay(1000);
   }
 }
