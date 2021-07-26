@@ -241,7 +241,7 @@ drinks = json.load(drinkFile)
 
 
 
-ser = serial.Serial("COM4", 9600)
+ser = serial.Serial("COM3", 9600)
 
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using :0.0')

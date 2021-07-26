@@ -6,9 +6,9 @@
 #include "config.hpp"
 
 int peristalicLed[6] = { 5, 4, 3, 2, 1, 0};
-int airLed[4] = { 11, 11, 11, 11};
+int airLed[4] = { 13, 12, 15, 14};
 int bottleLed[6] = {6, 7, 8, 9, 10, 11};
-int glasLed = 12;
+int glasLed = 16;
 
 Waage waage;
 Led ledstripe;
@@ -349,5 +349,3 @@ void fillGlas(Pumpe *pumpe, float amount)
     delay(1000);
   }
 }
-
-
