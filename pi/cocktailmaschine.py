@@ -63,16 +63,20 @@ def openRefillWindow(ingredient):
     window.geometry('1024x576')
     window.focus_force()
 
-    canvas = Canvas(window, width=1024, height=576, highlightthickness=0)
-    backgrouundCanvas =canvas.create_image(0,0,anchor="nw",image=buttler)
-    canvas.place(x = 0, y = 0)
+    refillCanvas = Canvas(window, width=1024, height=576, highlightthickness=0)
+    backgrouundCanvas =refillCanvas.create_image(0,0,anchor="nw",image=buttler)
+    refillCanvas.place(x = 0, y = 0)
+    refillCanvas.create_image((512,288), image=info)
 
-    label = Label(window, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\n Ruf schnell den Cocktail-Butler!\n Er kann dir helfen!\n", font=myFont)
-    label.pack()
+    heading = refillCanvas.create_text(512,200,text="Butler", font=headingFont, fill="white")
+    label = refillCanvas.create_text(512,320, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\nRuf schnell den Cocktail-Butler!\nEr kann dir helfen!\n",  font=myFont, fill="white", justify=CENTER)
+ 
 
-    refillButton = Button(window, font=myFont, text="Flasche aufgefüllt", bg="#ee0000", activebackground="#ee0000", command=lambda window=window: refillButtonClicked(window))
-    refillButton.pack()
+    #label = Label(window, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\n Ruf schnell den Cocktail-Butler!\n Er kann dir helfen!\n", font=myFont)
+   # label.pack()
 
+    refillButton = Button(window, font=myFont, text="Flasche aufgefüllt", bg="#ee0000", foreground="white", activebackground="#ee0000", command=lambda window=window: refillButtonClicked(window))
+    refillButton.place(x=512,y=420, anchor=CENTER)
 
 def openPrductionWindow(order):
     productionWindow = Toplevel()
@@ -80,17 +84,24 @@ def openPrductionWindow(order):
     productionWindow.resizable(0, 0)
     productionWindow.focus_force()
 
+    global productionCanvas
     productionCanvas = Canvas(productionWindow, width=1024, height=576, highlightthickness=0)
     productionCanvas.create_image(0,0,anchor="nw",image=production)
     productionCanvas.place(x = 0, y = 0)
-   
-    heading = Label(productionWindow, text = "Cocktail Produktion", font=myFont)
-    drink = Label(productionWindow, text =  order["name"], font=myFont)
-    process = Label(productionWindow, text =  "Start", font=myFont)
+
+    productionCanvas.create_image((512,288), image=info)
+
+    heading = productionCanvas.create_text(512,200,text="CocktailProduction", font=headingFont, fill="white")
+    drink = productionCanvas.create_text(512,250, text=order["name"], font=headingFont, fill="white" )
+    process = productionCanvas.create_text(512,350,text="Start", font=headingFont, fill="white")
+
+    #heading = Label(productionWindow, text = "Cocktail Produktion", font=myFont)
+    #drink = Label(productionWindow, text =  order["name"], font=myFont)
+    #process = Label(productionWindow, text =  "Start", font=myFont)
     
-    heading.pack()
-    drink.pack()
-    process.pack()
+    #heading.pack()
+    #drink.pack()
+    #process.pack()
 
     productionWindow.after(100, updateValue, productionWindow, process)
     thread = threading.Thread(target = updateProductionWindow, args=(order,productionWindow))
@@ -179,7 +190,8 @@ def updateValue(window, process):
         isFinished = False
     else:
         labelText = str(percent)
-        process.configure(text=labelText)
+        #process.configure(text=labelText)
+        productionCanvas.itemconfig(process, text=labelText)
         window.after(100, updateValue, window, process)
        # print("finished false")
 
@@ -197,9 +209,11 @@ def sendString(command):
     ser.write(b'\n')
 
 def sendCommand(command):
+  
     ser.write(b'\x02')
     ser.write(command.encode())
     ser.write(b'\x03')
+    time.sleep(0.1)
     print("Send " + command + "...")
 
 def receiveCommand():
@@ -225,6 +239,8 @@ def createButton(x, y):
     label = canvas.create_text((x,y),text=buttonText, font=myFont, fill="white")
     event = '<Button-1>'
     canvas.tag_bind(drinkButton, event, lambda e, mydrink=drink: orderButtonClicked(mydrink))
+    canvas.tag_bind(label, event, lambda e, mydrink=drink: orderButtonClicked(mydrink))
+
 
 config = {
     "p1": "havana",
@@ -245,6 +261,7 @@ drinks = json.load(drinkFile)
 showCommand = "6 1 100"
 
 ser = serial.Serial("COM4", 9600)
+time.sleep(2)
 
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using :0.0')
@@ -261,6 +278,7 @@ root.focus_force()
 # load background image
 bg = PhotoImage(file = 'background.png')
 transparent = PhotoImage(file = 'transparent.png')
+info = PhotoImage(file = 'info.png')
 production = PhotoImage(file = 'production.png')
 settings = PhotoImage(file='settings.png')
 buttler = PhotoImage(file='buttler.png')
@@ -270,6 +288,7 @@ canvas = Canvas(root, width=1024, height=576, highlightthickness=0)
 backgrouundCanvas =canvas.create_image(0,0,anchor="nw",image=bg)
 
 myFont = tkFont.Font(size=24, family="Franklin Gothic Medium")
+headingFont =  tkFont.Font(size=36, family="Franklin Gothic Medium")
 
 rowNumber = 0
 columnNumber = 0 
