@@ -9,6 +9,7 @@ int peristalicLed[6] = { 5, 4, 3, 2, 1, 0};
 int airLed[4] = { 13, 12, 15, 14};
 int bottleLed[6] = {6, 7, 8, 9, 10, 11};
 int glasLed = 16;
+int program = 0;
 
 Waage waage;
 Led ledstripe;
@@ -88,174 +89,140 @@ void loop() {
 
   if (newSerialEvent)
   {
-    int program = getValue(command, ' ', 0);
-    float amount, mass;
-    int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub;
-    switch (program)
-    {
-      case 1:
-        ledstripe.setLed(getValue(command, ' ', 1), strip.Color(getValue(command, ' ', 2), getValue(command, ' ', 3), getValue(command, ' ', 4)));
-        break;
-      case 2:
-        motor = getValue(command, ' ', 1);
-        motorSpeed = getValue(command, ' ', 2);
-        if (motorSpeed == 0) {
-          pumpen[motor]->stop();
-        }
-        else if (motorSpeed > 0) {
-          pumpen[motor]->setSpeed(motorSpeed);
-          pumpen[motor]->forward();
-        }
-        else if (motorSpeed < 0) {
-          pumpen[motor]->setSpeed(-1 * motorSpeed);
-          pumpen[motor]->backward();
-        }
-        break;
-      case 3:
-        ventil = getValue(command, ' ', 1);
-        state = getValue(command, ' ', 2);
-        if (state == 1)ventile[ventil].open();
-        else if (state == 0) ventile[ventil].close();
-        break;
-      case 4:
-        pumpe = getValue(command, ' ', 1);
-        amount = getValue(command, ' ', 2);
-        fillGlas(pumpen[pumpe - 1], amount);
-        break;
-      case 5:
-        sub =  getValue(command, ' ', 1);
-        if (sub == 1)
-        {
-          Serial.write(0x02);
-          Serial.print(waage.getValue());
-          Serial.write(0x03);
-        }
+    program = getValue(command, ' ', 0);
+  }
+  float amount, mass;
+  int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub, cmd;
+  switch (program)
+  {
+    case 1:
+      cmd = getValue(command, ' ', 1);
+      if(cmd==1)
+      {
+      ledstripe.setLed(getValue(command, ' ', 2), strip.Color(getValue(command, ' ', 3), getValue(command, ' ', 4), getValue(command, ' ', 5)));
+      }
+      else if (cmd==2)
+      {
+        ledstripe.fillLed(strip.Color(getValue(command, ' ', 2), getValue(command, ' ', 3), getValue(command, ' ', 4)));
+      }
+      program = 0;
+      break;
+    case 2:
+      motor = getValue(command, ' ', 1);
+      motorSpeed = getValue(command, ' ', 2);
+      if (motorSpeed == 0) {
+        pumpen[motor]->stop();
+      }
+      else if (motorSpeed > 0) {
+        pumpen[motor]->setSpeed(motorSpeed);
+        pumpen[motor]->forward();
+      }
+      else if (motorSpeed < 0) {
+        pumpen[motor]->setSpeed(-1 * motorSpeed);
+        pumpen[motor]->backward();
+      }
+      program = 0;
+      break;
+    case 3:
+      ventil = getValue(command, ' ', 1);
+      state = getValue(command, ' ', 2);
+      if (state == 1)ventile[ventil].open();
+      else if (state == 0) ventile[ventil].close();
+      program = 0;
+      break;
+    case 4:
+      pumpe = getValue(command, ' ', 1);
+      amount = getValue(command, ' ', 2);
+      fillGlas(pumpen[pumpe - 1], amount);
+      program = 0;
+      break;
+    case 5:
+      sub =  getValue(command, ' ', 1);
+      if (sub == 1)
+      {
+        Serial.write(0x02);
+        Serial.print(waage.getValue());
+        Serial.write(0x03);
+      }
 
-        else if (sub == 2)
-        {
-          waage.tare();
-        }
+      else if (sub == 2)
+      {
+        waage.tare();
+      }
 
-        else if (sub == 3)
-        {
-          mass = getValue(command, ' ', 2);
-          waage.calibrate(mass);
-        }
+      else if (sub == 3)
+      {
+        mass = getValue(command, ' ', 2);
+        waage.calibrate(mass);
+      }
 
-        else if (sub == 4)
-        {
-          waage.calibrate();
-        }
+      else if (sub == 4)
+      {
+        waage.calibrate();
+      }
+      program = 0;
+      break;
+    case 6:
+      ledShow = getValue(command, ' ', 1);
 
-        break;
-      case 6:
-        ledShow = getValue(command, ' ', 1);
+      if (ledShow == 1)
+      {
+        wait = getValue(command, ' ', 2);
+        ledstripe.rainbow(wait);
+      }
 
-        if (ledShow == 1)
-        {
-          wait = getValue(command, ' ', 2);
-          ledstripe.rainbow(wait);
-        }
+      else if (ledShow == 2)
+      {
+        wait = getValue(command, ' ', 2);
+        ledstripe.theaterChaseRainbow(wait);
 
-        else if (ledShow == 2)
-        {
-          wait = getValue(command, ' ', 2);
-          ledstripe.theaterChaseRainbow(wait);
+      }
 
-        }
+      else if (ledShow == 3)
+      {
+        wait = getValue(command, ' ', 2);
+        r = getValue(command, ' ', 3);
+        g = getValue(command, ' ', 4);
+        b = getValue(command, ' ', 5);
+        ledstripe.theaterChase(strip.Color(r, g, b), wait);
+      }
 
-        else if (ledShow == 3)
-        {
-          wait = getValue(command, ' ', 2);
-          r = getValue(command, ' ', 3);
-          g = getValue(command, ' ', 4);
-          b = getValue(command, ' ', 5);
-          ledstripe.theaterChase(strip.Color(r, g, b), wait);
-        }
-
-        else if (ledShow == 4)
-        {
-          wait = getValue(command, ' ', 2);
-          r = getValue(command, ' ', 3);
-          g = getValue(command, ' ', 4);
-          b = getValue(command, ' ', 5);
-          ledstripe.colorWipe(strip.Color(r, g, b), wait);
-        }
-        break;
-      default:
-        //do nothing
-        break;
-    }
+      else if (ledShow == 4)
+      {
+        wait = getValue(command, ' ', 2);
+        r = getValue(command, ' ', 3);
+        g = getValue(command, ' ', 4);
+        b = getValue(command, ' ', 5);
+        ledstripe.colorWipe(strip.Color(r, g, b), wait);
+      }
+      break;
+    default:
+      //do nothing
+      break;
   }
 
-  delay(100);
 
-  // demo();
+  delay(100);
 }
 
 float getValue(String data, char separator, int index)
 {
-    int found = 0;
-    int strIndex[] = { 0, -1 };
-    int maxIndex = data.length() - 1;
+  int found = 0;
+  int strIndex[] = { 0, -1 };
+  int maxIndex = data.length() - 1;
 
-    for (int i = 0; i <= maxIndex && found <= index; i++) {
-        if (data.charAt(i) == separator || i == maxIndex) {
-            found++;
-            strIndex[0] = strIndex[1] + 1;
-            strIndex[1] = (i == maxIndex) ? i+1 : i;
-        }
+  for (int i = 0; i <= maxIndex && found <= index; i++) {
+    if (data.charAt(i) == separator || i == maxIndex) {
+      found++;
+      strIndex[0] = strIndex[1] + 1;
+      strIndex[1] = (i == maxIndex) ? i + 1 : i;
     }
-
-    String sub = data.substring(strIndex[0], strIndex[1]);
-    return found > index ? sub.toFloat() : 0;
-}
-
-/**
-   Filling the glas with a test gin Tonic
-*/
-void demo()
-{
-  /*
-      Pumpe 1: Perstialic - Gin  5cl //40% alkohol = 50 * (60*1+40*0,8)/100 = 46g
-      Pumpe 2: Air - Tonic Vater 16cl = 160g
-      Led Pumpe: persitalicLed [0]
-      Led Bottle: bottleLed [0]
-      glasLed
-  */
-
-  Serial.println("Let's start, give me your glass!");
-
-  while (waage.getValue() < 100) {
-    //Blink glas white
-    ledstripe.setLed(glasLed, strip.Color(255, 255, 255));
-    delay(500);
-    ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
-    delay(500);
-
   }
 
-  //Start with Gin
-  Serial.println("Starting with Gin!");
-  fillGlas(pumpen[0], 46);
-  Serial.println("Finished with Gin!");
-
-  //Continue with tonic water
-  Serial.println("Starting with Tonic Water!");
-  fillGlas(pumpen[6], 160);
-  Serial.println("Finished with Tonic Water!");
-
-  Serial.println("Finished! Enjoy your drink!");
-
-  while (waage.getValue() > 100)
-  {
-    //Blink glas green
-    ledstripe.setLed(glasLed, strip.Color(0, 255, 0));
-    delay(500);
-    ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
-    delay(500);
-  }
+  String sub = data.substring(strIndex[0], strIndex[1]);
+  return found > index ? sub.toFloat() : 0;
 }
+
 
 void fillGlas(Pumpe *pumpe, float amount)
 {

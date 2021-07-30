@@ -25,6 +25,14 @@ void Led::setLed(int led, uint32_t color)
   strip.show();
 }
 
+void Led::fillLed(uint32_t color)
+{
+  //strip.clear();
+  strip.fill(color);
+  strip.show();
+}
+
+
 
 
 // Some functions of our own for creating animated effects -----------------
@@ -41,6 +49,18 @@ void Led::colorWipe(uint32_t color, int wait) {
     delay(wait);                           //  Pause for a moment
   }
 }
+
+
+//Blink on off with the color
+void Led::blinkOnOff(uint32_t color, int wait) {
+   strip.fill(color);         //  Set pixel's color (in RAM)
+   strip.show();                          //  Update strip to match
+   delay(wait);  
+   strip.fill(strip.Color(0,0,0));         //  Set pixel's color (in RAM)
+   strip.show();                          //  Update strip to match
+   delay(wait);  
+}
+
 
 // Theater-marquee-style chasing lights. Pass in a color (32-bit value,
 // a la strip.Color(r,g,b) as mentioned above), and a delay time (in ms)
@@ -104,5 +124,3 @@ void Led::theaterChaseRainbow(int wait) {
     }
   }
 }
-
-

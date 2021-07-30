@@ -161,7 +161,10 @@ def updateProductionWindow(order, window):
                     waitForAnser = False
 
     percent = "Finished!"
+    sendCommand("6 5 500 0 255 0")
     time.sleep(2)
+    sendCommand("1 2 0 0 0")
+    sendCommand(showCommand)
 
     global isFinished 
     isFinished = True
@@ -239,9 +242,9 @@ config = {
 drinkFile = open("drinks.json", "r")
 drinks = json.load(drinkFile)
 
+showCommand = "6 1 100"
 
-
-ser = serial.Serial("COM3", 9600)
+ser = serial.Serial("COM4", 9600)
 
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using :0.0')
@@ -320,6 +323,7 @@ for drink in drinks:
 settingsButton = canvas.create_image((1014,566), anchor="se", image=settings)
 event = '<Button-1>'
 canvas.tag_bind(settingsButton, event, lambda e: settingsButtonClicked())
+sendCommand(showCommand)
 
 #root.attributes('-alpha', 0.5)
 root.mainloop()
