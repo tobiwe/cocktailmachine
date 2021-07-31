@@ -9,8 +9,11 @@ int peristalicLed[6] = { 5, 4, 3, 2, 1, 0};
 int airLed[4] = { 13, 12, 15, 14};
 int bottleLed[6] = {6, 7, 8, 9, 10, 11};
 int glasLed = 16;
+
+char command[20];
 int program = 0;
 int old = 0;
+char oldCommand[20];
 
 Waage waage;
 Led ledstripe;
@@ -68,7 +71,6 @@ void setup() {
 
 void loop() {
   int zaehler = 0;
-  char command[20];
   bool newSerialEvent = false;
 
   waage.update();
@@ -81,6 +83,7 @@ void loop() {
     else if (inChar == 0x03) {
       newSerialEvent = true;
       command[zaehler] = '\0';
+      memcpy(oldCommand, command, sizeof(command));
       break;
     }
     else {
@@ -146,7 +149,6 @@ void loop() {
         Serial.write(0x02);
         Serial.print(waage.getValue());
         Serial.write(0x03);
-        program = old;
       }
 
       else if (sub == 2)
@@ -164,7 +166,8 @@ void loop() {
       {
         waage.calibrate();
       }
-      program = 0;
+      program = old;
+      memcpy(command, oldCommand, sizeof(oldCommand));
       break;
     case 6:
       ledShow = getValue(command, ' ', 1);
