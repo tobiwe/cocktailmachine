@@ -1,1 +1,2 @@
-python3 ~/Desktop/pi/cocktailmaschine.py
+cd /home/pi/Desktop/pi/
+python3 cocktailmaschine.py

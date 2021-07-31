@@ -10,6 +10,7 @@ int airLed[4] = { 13, 12, 15, 14};
 int bottleLed[6] = {6, 7, 8, 9, 10, 11};
 int glasLed = 16;
 int program = 0;
+int old = 0;
 
 Waage waage;
 Led ledstripe;
@@ -90,6 +91,7 @@ void loop() {
 
   if (newSerialEvent)
   {
+    old = program;
     program = getValue(command, ' ', 0);
   }
   float amount, mass;
@@ -144,6 +146,7 @@ void loop() {
         Serial.write(0x02);
         Serial.print(waage.getValue());
         Serial.write(0x03);
+        program = old;
       }
 
       else if (sub == 2)

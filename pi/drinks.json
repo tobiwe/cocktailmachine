@@ -2,70 +2,70 @@
   {
   "name":"Gin Tonic",
   "ingredients": [
-    { "unit": "cl",
-      "amount": 5,
+    { "unit": "g",
+      "amount": 45,
       "ingredient": "gin" },
-    { "unit": "cl",
-      "amount": 15,
+    { "unit": "g",
+      "amount": 150,
       "ingredient": "tonic water" }
   ]},
   {
   "name":"Mojito",
   "ingredients": [
-    { "unit": "cl",
-      "amount": 5,
+    { "unit": "g",
+      "amount": 45,
       "ingredient": "havana" },
-      { "unit": "cl",
-        "amount": 6,
+      { "unit": "g",
+        "amount": 60,
         "ingredient": "soda" },
-    { "unit": "cl",
-      "amount": 0.5,
+    { "unit": "g",
+      "amount": 5,
       "ingredient": "lemon juice" }
   ]
   },
   {
   "name":"Moscow Mule",
   "ingredients": [
-    { "unit": "cl",
-      "amount": 5,
+    { "unit": "g",
+      "amount": 45,
       "ingredient": "vodka" },
-    { "unit": "cl",
-      "amount": 15,
+    { "unit": "g",
+      "amount": 150,
       "ingredient": "ginger beer" }
   ]
   },
   {
   "name":"Virgin Gin Tonic",
   "ingredients": [
-    { "unit": "cl",
-      "amount": 20,
+    { "unit": "g",
+      "amount": 190,
       "ingredient": "soda" },
-    { "unit": "cl",
-      "amount": 0.5,
+    { "unit": "g",
+      "amount": 5,
       "ingredient": "lemon juice" }
   ]},
   {
   "name":"Vigin Mojito",
   "ingredients": [
-    { "unit": "cl",
-      "amount": 20,
+    { "unit": "g",
+      "amount": 190,
       "ingredient": "ginger ale" },
-    { "unit": "cl",
-      "amount": 0.5,
+    { "unit": "g",
+      "amount": 5,
       "ingredient": "lemon juice" }
   ]
   },
   {
   "name":"Virgin Moscow Mule",
   "ingredients": [
-    { "unit": "cl",
-      "amount": 15,
+    { "unit": "g",
+      "amount": 150,
       "ingredient": "ginger beer" },
-    { "unit": "cl",
-      "amount": 3,
+    { "unit": "g",
+      "amount": 30,
       "ingredient": "soda" },
-    { "unit": "cl",
-      "amount": 0.5,
+    { "unit": "g",
+      "amount": 5,
       "ingredient": "lemon juice" }
   ]
   }
