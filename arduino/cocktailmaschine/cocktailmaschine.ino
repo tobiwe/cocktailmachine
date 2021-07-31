@@ -80,6 +80,7 @@ void loop() {
     else if (inChar == 0x03) {
       newSerialEvent = true;
       command[zaehler] = '\0';
+      break;
     }
     else {
       command[zaehler] = inChar;
@@ -194,6 +195,14 @@ void loop() {
         g = getValue(command, ' ', 4);
         b = getValue(command, ' ', 5);
         ledstripe.colorWipe(strip.Color(r, g, b), wait);
+      }
+      else if (ledShow == 5)
+      {
+        wait = getValue(command, ' ', 2);
+        r = getValue(command, ' ', 3);
+        g = getValue(command, ' ', 4);
+        b = getValue(command, ' ', 5);
+        ledstripe.blinkOnOff(strip.Color(r, g, b), wait);
       }
       break;
     default:

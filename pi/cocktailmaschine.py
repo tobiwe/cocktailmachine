@@ -28,7 +28,7 @@ def settingsButtonClicked():
     window.geometry("1024x576")
     window.resizable(0, 0)
     window.wm_title('Settings')
-    #root.attributes('-fullscreen', True)
+    root.attributes('-fullscreen', True)
 
     Grid.rowconfigure(window, 0, weight=1)
     Grid.rowconfigure(window, 1, weight=1)
@@ -47,7 +47,7 @@ def settingsButtonClicked():
     ExitButton = Button(window, font=myFont, text="Exit", bg="#ee0000", activebackground="#ee0000", command=exitButtonClicked)
     ExitButton.grid(row= 1, column=1, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
 
-    #window.attributes('-fullscreen', True)
+    window.attributes('-fullscreen', True)
 
 
 def getPump(neededIngredient):
@@ -75,10 +75,13 @@ def openRefillWindow(ingredient):
     #label = Label(window, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\n Ruf schnell den Cocktail-Butler!\n Er kann dir helfen!\n", font=myFont)
    # label.pack()
 
-    refillButton = Button(window, font=myFont, text="Flasche aufgefüllt", bg="#ee0000", foreground="white", activebackground="#ee0000", command=lambda window=window: refillButtonClicked(window))
+    refillButton = Button(window, font=myFont, text="Flasche aufgefuellt", bg="#ee0000", foreground="white", activebackground="#ee0000", command=lambda window=window: refillButtonClicked(window))
     refillButton.place(x=512,y=420, anchor=CENTER)
+    window.attributes('-fullscreen', True)
 
 def openPrductionWindow(order):
+
+    sendCommand("1 2 0 0 0")
     productionWindow = Toplevel()
     productionWindow.geometry('1024x576')
     productionWindow.resizable(0, 0)
@@ -106,7 +109,7 @@ def openPrductionWindow(order):
     productionWindow.after(100, updateValue, productionWindow, process)
     thread = threading.Thread(target = updateProductionWindow, args=(order,productionWindow))
     thread.start()
-   # window.attributes('-fullscreen', True)
+    productionWindow.attributes('-fullscreen', True)
 
 
 def updateProductionWindow(order, window):
@@ -173,7 +176,7 @@ def updateProductionWindow(order, window):
 
     percent = "Finished!"
     sendCommand("6 5 500 0 255 0")
-    time.sleep(2)
+    time.sleep(5)
     sendCommand("1 2 0 0 0")
     sendCommand(showCommand)
 
@@ -209,11 +212,11 @@ def sendString(command):
     ser.write(b'\n')
 
 def sendCommand(command):
-  
+    time.sleep(0.1)
     ser.write(b'\x02')
     ser.write(command.encode())
     ser.write(b'\x03')
-    time.sleep(0.1)
+    ser.flush()
     print("Send " + command + "...")
 
 def receiveCommand():
@@ -258,9 +261,9 @@ config = {
 drinkFile = open("drinks.json", "r")
 drinks = json.load(drinkFile)
 
-showCommand = "6 1 100"
+showCommand = "6 1 5"
 
-ser = serial.Serial("COM4", 9600)
+ser = serial.Serial("/dev/ttyACM0", 9600)
 time.sleep(2)
 
 if os.environ.get('DISPLAY','') == '':
@@ -268,12 +271,12 @@ if os.environ.get('DISPLAY','') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 root = Tk()
-#root.config(cursor="none", background="black")
+root.config(cursor="none", background="black")
 root.geometry("1024x576")
 root.resizable(0, 0)
 root.wm_title('Cocktail-Maschine')
 root.focus_force()
-#root.attributes('-fullscreen', True)
+root.attributes('-fullscreen', True)
  
 # load background image
 bg = PhotoImage(file = 'background.png')
