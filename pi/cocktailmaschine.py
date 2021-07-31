@@ -13,7 +13,7 @@ def orderButtonClicked(order):
     openPrductionWindow(order)
 
 def exitButtonClicked():
-    print("Programm wird beendet")
+    #print("Programm wird beendet")
     ser.close()
     root.quit()
 
@@ -118,12 +118,13 @@ def updateProductionWindow(order, window):
     percent = "Waiting for glas"
     weight = 0
 
-    while weight<300:
+    while weight<400 or weight>550:
+        time.sleep(0.5)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
         weight = float(answer)
-        print("Gewicht: " + str(weight))
+        #print("Gewicht: " + str(weight))
 
 
     for ingredient in order["ingredients"]:
@@ -165,7 +166,7 @@ def updateProductionWindow(order, window):
             waitForAnser = True
             
             while waitForAnser:
-                print("Wait for answer")
+                #print("Wait for answer")
                 result = receiveCommand()
                 if result == "refill":
                     openRefillWindow(ingredient)
@@ -174,9 +175,17 @@ def updateProductionWindow(order, window):
                 if result == "finish":
                     waitForAnser = False
 
-    percent = "Finished!"
+    percent = "Finished! Enjoy your drink!"
     sendCommand("6 5 500 0 255 0")
-    time.sleep(5)
+
+    while weight>100:
+        time.sleep(0.5)
+        sendCommand("5 1")
+        waitForAnser = True
+        answer = receiveCommand()
+        weight = float(answer)
+        #print("Gewicht: " + str(weight))
+
     sendCommand("1 2 0 0 0")
     sendCommand(showCommand)
 
@@ -200,11 +209,11 @@ def updateValue(window, process):
 
 ### arduino commands
 def calibrate():
-    print("Calibrate")
+    #print("Calibrate")
     sendCommand("5 3 302.00")
 
 def tare():
-    print("Tare")
+    #print("Tare")
     sendCommand("5 2")
 
 def sendString(command):
@@ -217,7 +226,7 @@ def sendCommand(command):
     ser.write(command.encode())
     ser.write(b'\x03')
     ser.flush()
-    print("Send " + command + "...")
+    #print("Send " + command + "...")
 
 def receiveCommand():
 
@@ -234,7 +243,7 @@ def receiveCommand():
             elif started:
                 line+=chr(character)
            
-    print(line)
+    #print(line)
     return line
 
 def createButton(x, y):
@@ -267,7 +276,7 @@ ser = serial.Serial("/dev/ttyACM0", 9600)
 time.sleep(2)
 
 if os.environ.get('DISPLAY','') == '':
-    print('no display found. Using :0.0')
+    #print('no display found. Using :0.0')
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 root = Tk()
