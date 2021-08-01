@@ -12,6 +12,9 @@ import threading
 def orderButtonClicked(order):
     openPrductionWindow(order)
 
+def commandButtonClicked():
+    openCommandWindow()
+
 def exitButtonClicked():
     #print("Programm wird beendet")
     ser.close()
@@ -35,13 +38,16 @@ def settingsButtonClicked():
 
     Grid.columnconfigure(window, 0, weight=1)
     Grid.columnconfigure(window, 1, weight=1)
+    Grid.columnconfigure(window, 2, weight=1)
 
     CalibrateButton = Button(window, font=myFont, text="Calibrate", bg="#ee0000", activebackground="#ee0000", command=calibrate)
     CalibrateButton.grid(row= 0, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
-
     TareButton = Button(window, font=myFont, text="Tare", bg="#ee0000", activebackground="#ee0000", command=tare)
     TareButton.grid(row= 0, column=1, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
-   
+
+    CommandButton = Button(window, font=myFont, text="Command", bg="#ee0000", activebackground="#ee0000", command=commandButtonClicked)
+    CommandButton.grid(row= 0, column=2, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
     BackButton = Button(window, font=myFont, text="Back", bg="#ee0000", activebackground="#ee0000", command=window.destroy)
     BackButton.grid(row= 1, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
     ExitButton = Button(window, font=myFont, text="Exit", bg="#ee0000", activebackground="#ee0000", command=exitButtonClicked)
@@ -111,6 +117,32 @@ def openPrductionWindow(order):
     thread.start()
     productionWindow.attributes('-fullscreen', True)
 
+def openCommandWindow():
+
+    commandWindow = Toplevel()
+    commandWindow.geometry('1024x576')
+    commandWindow.resizable(0, 0)
+    commandWindow.focus_force()
+    commandWindow.attributes('-fullscreen', True)
+    
+    Grid.rowconfigure(commandWindow, 0, weight=1)
+    Grid.rowconfigure(commandWindow, 1, weight=1)
+    Grid.rowconfigure(commandWindow, 2, weight=1)
+
+
+    Grid.columnconfigure(commandWindow, 0, weight=1)
+
+
+    CommandText = Text(commandWindow)
+    CommandText.grid(row=0, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
+    SendCommand = Button(commandWindow, font=myFont, text="Send", bg="#ee0000", activebackground="#ee0000", command=lambda CommandText=CommandText: sendCommand(CommandText.get(1.0, "end-1c")))
+    SendCommand.grid(row= 1, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+
+    BackButton = Button(commandWindow, font=myFont, text="Back", bg="#ee0000", activebackground="#ee0000", command=commandWindow.destroy)
+    BackButton.grid(row= 2, column=0, padx=10, pady=10, ipadx=50, ipady=50, sticky="nesw")
+   
+
 
 def updateProductionWindow(order, window):
     global percent
@@ -178,6 +210,7 @@ def updateProductionWindow(order, window):
     percent = "Finished! Enjoy your drink!"
     sendCommand("6 5 500 0 255 0")
 
+    weight = 400
     while weight>100:
         time.sleep(0.5)
         sendCommand("5 1")
@@ -226,7 +259,7 @@ def sendCommand(command):
     ser.write(command.encode())
     ser.write(b'\x03')
     ser.flush()
-    #print("Send " + command + "...")
+    print("Send " + command + "...")
 
 def receiveCommand():
 
@@ -272,7 +305,10 @@ drinks = json.load(drinkFile)
 
 showCommand = "6 1 5"
 
+# test or productive environment?
 ser = serial.Serial("/dev/ttyACM0", 9600)
+#ser = serial.Serial("COM4", 9600)
+
 time.sleep(2)
 
 if os.environ.get('DISPLAY','') == '':

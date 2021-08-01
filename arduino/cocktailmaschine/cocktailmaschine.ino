@@ -181,7 +181,7 @@ void loop() {
       else if (ledShow == 2)
       {
         wait = getValue(command, ' ', 2);
-        ledstripe.theaterChaseRainbow(wait);
+        ledstripe.fasterTheaterChaseRainbow(wait);
 
       }
 
