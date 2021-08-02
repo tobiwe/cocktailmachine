@@ -4,6 +4,22 @@
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
+unsigned long lastUpdate = 0 ; // for millis() when last update occoured
+
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85) {
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if (WheelPos < 170) {
+    WheelPos -= 85;
+    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+
 void Led::setup()
 {
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
@@ -49,6 +65,24 @@ void Led::colorWipe(uint32_t color, int wait) {
     delay(wait);                           //  Pause for a moment
   }
 }
+
+void Led::fasterBlinkOnOff(uint32_t color, int wait) {
+
+  static uint32_t lastColor =strip.Color(0,0,0);
+ 
+  if (millis() - lastUpdate > wait)
+  {
+      if(lastColor == color)
+      {
+        color = strip.Color(0,0,0);
+      }
+      strip.fill(color);         
+      strip.show();  
+      lastColor = color;
+      lastUpdate = millis();                       
+  }
+}
+
 
 
 //Blink on off with the color
@@ -103,23 +137,31 @@ void Led::rainbow(int wait) {
   }
 }
 
-void Led::fasterTheaterChaseRainbow(int wait) {
-  int firstPixelHue = 0;     // First pixel starts at red (hue 0)
 
-  for (int b = 0; b < 3; b++) { //  'b' counts from 0 to 2...
-    strip.clear();         //   Set all pixels in RAM to 0 (off)
-    // 'c' counts up from 'b' to end of strip in increments of 3...
-    for (int c = b; c < strip.numPixels(); c += 3) {
-      // hue of pixel 'c' is offset by an amount to make one full
-      // revolution of the color wheel (range 65536) along the length
-      // of the strip (strip.numPixels() steps):
-      int      hue   = firstPixelHue + c * 65536L / strip.numPixels();
-      uint32_t color = strip.gamma32(strip.ColorHSV(hue)); // hue -> RGB
-      strip.setPixelColor(c, color); // Set pixel 'c' to value 'color'
+void Led::fasterTheaterChaseRainbow(int wait) {
+  if (millis() - lastUpdate > wait)
+  {
+    static int j = 0, q = 0;
+    static boolean on = true;
+    if (on) {
+      for (int i = 0; i < strip.numPixels(); i = i + 3) {
+        strip.setPixelColor(i + q, Wheel( (i + j) % 255)); //turn every third pixel on
+      }
     }
-    strip.show();                // Update strip with new contents
-    delay(wait);                 // Pause for a moment
-    firstPixelHue += 65536 / 90; // One cycle of color wheel over 90 frames
+    else {
+      for (int i = 0; i < strip.numPixels(); i = i + 3) {
+        strip.setPixelColor(i + q, 0);      //turn every third pixel off
+      }
+    }
+    on = !on; // toggel pixelse on or off for next time
+    strip.show(); // display
+    q++; // update the q variable
+    if (q >= 3 ) { // if it overflows reset it and update the J variable
+      q = 0;
+      j++;
+      if (j >= 256) j = 0;
+    }
+    lastUpdate = millis(); // time for next change to the display
   }
 
 }

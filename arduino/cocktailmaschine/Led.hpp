@@ -20,6 +20,7 @@ class Led
     void theaterChase(uint32_t color, int wait);
     void colorWipe(uint32_t color, int wait);
     void blinkOnOff(uint32_t color, int wait);
+    void fasterBlinkOnOff(uint32_t color, int wait);
 };
 
 #endif

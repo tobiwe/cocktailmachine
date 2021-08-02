@@ -76,14 +76,15 @@ void loop() {
   waage.update();
 
   while (Serial.available()) {
+   
     char inChar = (char)Serial.read();
     if (inChar == 0x02) {
       zaehler = 0;
+       memcpy(oldCommand, command, sizeof(command));
     }
     else if (inChar == 0x03) {
       newSerialEvent = true;
       command[zaehler] = '\0';
-      memcpy(oldCommand, command, sizeof(command));
       break;
     }
     else {
@@ -208,7 +209,7 @@ void loop() {
         r = getValue(command, ' ', 3);
         g = getValue(command, ' ', 4);
         b = getValue(command, ' ', 5);
-        ledstripe.blinkOnOff(strip.Color(r, g, b), wait);
+        ledstripe.fasterBlinkOnOff(strip.Color(r, g, b), wait);
       }
       break;
     default:
@@ -293,8 +294,18 @@ void fillGlas(Pumpe *pumpe, float amount)
 
         //Blink here
         ledstripe.setLed(pumpe->bottleLed, strip.Color(255, 0, 0));
+
+        for(int i:peristalicLed)
+        {
+          ledstripe.setLed(i, strip.Color(255, 0, 0));
+        }
+        
         delay(250);
         ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
+         for(int i:peristalicLed)
+        {
+          ledstripe.setLed(i, strip.Color(0, 0, 0));
+        }
         delay(250);
 
         if (Serial.available())
