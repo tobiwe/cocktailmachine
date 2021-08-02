@@ -4,23 +4,28 @@
   "ingredients": [
     { "unit": "g",
       "amount": 45,
-      "ingredient": "gin" },
+      "ingredient": "gin", 
+      "ingredientText": "Gin" },
     { "unit": "g",
       "amount": 150,
-      "ingredient": "tonic water" }
+      "ingredient": "tonic water",
+      "ingredientText": "Tonic Water"  }
   ]},
   {
   "name":"Mojito",
   "ingredients": [
     { "unit": "g",
       "amount": 45,
-      "ingredient": "havana" },
+      "ingredient": "bacardi",
+      "ingredientText": "Bacardi" },
       { "unit": "g",
         "amount": 60,
-        "ingredient": "soda" },
+        "ingredient": "soda",
+        "ingredientText": "Sprudel" },
     { "unit": "g",
       "amount": 5,
-      "ingredient": "lemon juice" }
+      "ingredient": "lemon juice", 
+      "ingredientText": "Limettensaft" }
   ]
   },
   {
@@ -28,10 +33,12 @@
   "ingredients": [
     { "unit": "g",
       "amount": 45,
-      "ingredient": "vodka" },
+      "ingredient": "vodka",
+      "ingredientText": "Vodka"  },
     { "unit": "g",
       "amount": 150,
-      "ingredient": "ginger beer" }
+      "ingredient": "ginger beer",
+      "ingredientText": "Ginger Beer" }
   ]
   },
   {
@@ -39,20 +46,24 @@
   "ingredients": [
     { "unit": "g",
       "amount": 190,
-      "ingredient": "soda" },
+      "ingredient": "soda",
+      "ingredientText": "Sprudel"  },
     { "unit": "g",
       "amount": 5,
-      "ingredient": "lemon juice" }
+      "ingredient": "lemon juice",
+      "ingredientText": "Limettensaft"  }
   ]},
   {
   "name":"Vigin Mojito",
   "ingredients": [
     { "unit": "g",
       "amount": 190,
-      "ingredient": "ginger ale" },
+      "ingredient": "ginger ale",
+      "ingredientText": "Ginger Ale" },
     { "unit": "g",
       "amount": 5,
-      "ingredient": "lemon juice" }
+      "ingredient": "lemon juice",
+      "ingredientText": "Limettensaft"  }
   ]
   },
   {
@@ -60,13 +71,16 @@
   "ingredients": [
     { "unit": "g",
       "amount": 150,
-      "ingredient": "ginger beer" },
+      "ingredient": "ginger beer",
+      "ingredientText": "Ginger Beer"  },
     { "unit": "g",
       "amount": 30,
-      "ingredient": "soda" },
+      "ingredient": "soda",
+      "ingredientText": "Sprudel"  },
     { "unit": "g",
       "amount": 5,
-      "ingredient": "lemon juice" }
+      "ingredient": "lemon juice",
+      "ingredientText": "Limettensaft"  }
   ]
   }
 ]

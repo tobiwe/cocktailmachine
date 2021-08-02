@@ -24,6 +24,10 @@ def refillButtonClicked(window):
     sendString("done")
     global refill
     refill = False
+
+    global refillWindowOpen
+    refillWindowOpen =False
+
     window.destroy()
 
 def settingsButtonClicked():
@@ -65,25 +69,26 @@ def getPump(neededIngredient):
     return list
 
 def openRefillWindow(ingredient):
-    window = Toplevel()
-    window.geometry('1024x576')
-    window.focus_force()
+    global refillWindowOpen
+    refillWindowOpen = True
+    refillWindow = Toplevel()
+    refillWindow.geometry("1024x576")
+    refillWindow.attributes('-fullscreen', True)
+    refillWindow.resizable(0, 0)
+    refillWindow.wm_title('Refill')
 
-    refillCanvas = Canvas(window, width=1024, height=576, highlightthickness=0)
+    refillCanvas = Canvas(refillWindow, width=1024, height=576, highlightthickness=0)
     backgrouundCanvas =refillCanvas.create_image(0,0,anchor="nw",image=buttler)
     refillCanvas.place(x = 0, y = 0)
     refillCanvas.create_image((512,288), image=info)
 
     heading = refillCanvas.create_text(512,200,text="Butler", font=headingFont, fill="white")
-    label = refillCanvas.create_text(512,320, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\nRuf schnell den Cocktail-Butler!\nEr kann dir helfen!\n",  font=myFont, fill="white", justify=CENTER)
- 
+    label = refillCanvas.create_text(512,320, text = "Ohhh - " + ingredient["ingredientText"] + " leer!\nRuf schnell den Cocktail-Butler.\nEr kann dir helfen!\n",  font=myFont, fill="white", justify=CENTER)
 
-    #label = Label(window, text = "Hilfe, die Flasche ist leer (" + ingredient["ingredient"] + ")!\n Ruf schnell den Cocktail-Butler!\n Er kann dir helfen!\n", font=myFont)
-   # label.pack()
-
-    refillButton = Button(window, font=myFont, text="Flasche aufgefuellt", bg="#ee0000", foreground="white", activebackground="#ee0000", command=lambda window=window: refillButtonClicked(window))
+    refillButton = Button(refillWindow, font=myFont, text="Weiter geht's!", bg="#ee0000", foreground="white", activebackground="#ee0000", command=lambda refillWindow=refillWindow: refillButtonClicked(refillWindow))
     refillButton.place(x=512,y=420, anchor=CENTER)
-    window.attributes('-fullscreen', True)
+    
+   
 
 def openPrductionWindow(order):
 
@@ -100,17 +105,9 @@ def openPrductionWindow(order):
 
     productionCanvas.create_image((512,288), image=info)
 
-    heading = productionCanvas.create_text(512,200,text="CocktailProduction", font=headingFont, fill="white")
+    heading = productionCanvas.create_text(512,200,text="Es werde", font=headingFont, fill="white")
     drink = productionCanvas.create_text(512,250, text=order["name"], font=headingFont, fill="white" )
-    process = productionCanvas.create_text(512,350,text="Start", font=headingFont, fill="white")
-
-    #heading = Label(productionWindow, text = "Cocktail Produktion", font=myFont)
-    #drink = Label(productionWindow, text =  order["name"], font=myFont)
-    #process = Label(productionWindow, text =  "Start", font=myFont)
-    
-    #heading.pack()
-    #drink.pack()
-    #process.pack()
+    process = productionCanvas.create_text(512,350,text="Gleicht geht'los!", font=headingFont, fill="white")
 
     productionWindow.after(100, updateValue, productionWindow, process)
     thread = threading.Thread(target = updateProductionWindow, args=(order,productionWindow))
@@ -147,11 +144,10 @@ def openCommandWindow():
 def updateProductionWindow(order, window):
     global percent
 
-    percent = "Waiting for glas"
+    percent = "Gib mir dein Glas"
     weight = 0
 
     while weight<400 or weight>550:
-        time.sleep(0.5)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
@@ -161,7 +157,7 @@ def updateProductionWindow(order, window):
 
     for ingredient in order["ingredients"]:
         pumps = getPump(ingredient["ingredient"])
-        percent = (" --> " + str(ingredient["amount"]) + ingredient ["unit"] + " " + ingredient["ingredient"] + " (" + str(pumps) + ")")
+        percent = (" Ein bisschen " + ingredient["ingredientText"] + "...")
 
         amount = ingredient["amount"]
         if len(pumps) == 2:
@@ -201,18 +197,18 @@ def updateProductionWindow(order, window):
                 #print("Wait for answer")
                 result = receiveCommand()
                 if result == "refill":
-                    openRefillWindow(ingredient)
                     global refill
-                    refill = True    
+                    refill = True   
+                    global refillIngredient
+                    refillIngredient = ingredient
                 if result == "finish":
                     waitForAnser = False
 
-    percent = "Finished! Enjoy your drink!"
+    percent = "Fertig! Prost!"
     sendCommand("6 5 500 0 255 0")
 
     weight = 400
     while weight>100:
-        time.sleep(0.5)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
@@ -228,6 +224,14 @@ def updateProductionWindow(order, window):
 
 def updateValue(window, process):
     #print("Check finisehd")
+
+    global refill
+    global refillIngredient
+    global refillWindowOpen
+    if refill:
+        if refillWindowOpen==False:
+            openRefillWindow(refillIngredient)
+
     global isFinished 
     if isFinished:
         window.destroy()
@@ -254,15 +258,15 @@ def sendString(command):
     ser.write(b'\n')
 
 def sendCommand(command):
-    time.sleep(0.1)
+    time.sleep(0.01)
     ser.write(b'\x02')
     ser.write(command.encode())
     ser.write(b'\x03')
     ser.flush()
-    print("Send " + command + "...")
+    time.sleep(0.01)
+    #print("Send " + command + "...")
 
 def receiveCommand():
-
     line = ""
     started = False
     ended = False
@@ -288,7 +292,7 @@ def createButton(x, y):
 
 
 config = {
-    "p1": "havana",
+    "p1": "bacardi",
     "p2": "vodka",
     "p3": "vodka",
     "p4": "gin",
@@ -306,8 +310,8 @@ drinks = json.load(drinkFile)
 showCommand = "6 1 5"
 
 # test or productive environment?
-ser = serial.Serial("/dev/ttyACM0", 9600)
-#ser = serial.Serial("COM4", 9600)
+#ser = serial.Serial("/dev/ttyACM0", 9600)
+ser = serial.Serial("COM4", 9600)
 
 time.sleep(2)
 
@@ -316,7 +320,7 @@ if os.environ.get('DISPLAY','') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 root = Tk()
-root.config(cursor="none", background="black")
+#root.config(cursor="none", background="black")
 root.geometry("1024x576")
 root.resizable(0, 0)
 root.wm_title('Cocktail-Maschine')
@@ -336,7 +340,7 @@ canvas = Canvas(root, width=1024, height=576, highlightthickness=0)
 backgrouundCanvas =canvas.create_image(0,0,anchor="nw",image=bg)
 
 myFont = tkFont.Font(size=24, family="Franklin Gothic Medium")
-headingFont =  tkFont.Font(size=36, family="Franklin Gothic Medium")
+headingFont =  tkFont.Font(size=34, family="Franklin Gothic Medium")
 
 rowNumber = 0
 columnNumber = 0 
@@ -346,6 +350,8 @@ myWindow = 0
 isFinished = False
 percent = 0
 refill = False
+refillIngredient = ""
+refillWindowOpen = False
 index = 1
 
 for drink in drinks:
