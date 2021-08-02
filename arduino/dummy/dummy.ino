@@ -99,7 +99,7 @@ void loop() {
         fillTest();
         break;
       case 5:
-        float randNumber = random(1, 350);
+        float randNumber = random(50, 450);
         bool refill = false;
         delay(10);
 
@@ -117,4 +117,3 @@ void loop() {
   delay(100);
 
 }
-
