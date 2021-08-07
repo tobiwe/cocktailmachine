@@ -17,6 +17,7 @@ class Led
     void theaterChaseRainbow(int wait);
     void fasterTheaterChaseRainbow(int wait);
     void rainbow(int wait);
+    void fasterRainbow(int wait);
     void theaterChase(uint32_t color, int wait);
     void colorWipe(uint32_t color, int wait);
     void blinkOnOff(uint32_t color, int wait);

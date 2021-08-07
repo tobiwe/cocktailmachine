@@ -15,6 +15,10 @@ int program = 0;
 int old = 0;
 char oldCommand[20];
 
+int zaehler = 0;
+bool newSerialEvent = false;
+
+
 Waage waage;
 Led ledstripe;
 
@@ -70,45 +74,29 @@ void setup() {
 }
 
 void loop() {
-  int zaehler = 0;
-  bool newSerialEvent = false;
 
   waage.update();
 
-  while (Serial.available()) {
-   
-    char inChar = (char)Serial.read();
-    if (inChar == 0x02) {
-      zaehler = 0;
-       memcpy(oldCommand, command, sizeof(command));
-    }
-    else if (inChar == 0x03) {
-      newSerialEvent = true;
-      command[zaehler] = '\0';
-      break;
-    }
-    else {
-      command[zaehler] = inChar;
-      zaehler++;
-    }
-  }
+  checkForSerialEvent();
 
   if (newSerialEvent)
   {
     old = program;
     program = getValue(command, ' ', 0);
+    newSerialEvent = false;
   }
+
   float amount, mass;
   int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub, cmd;
   switch (program)
   {
     case 1:
       cmd = getValue(command, ' ', 1);
-      if(cmd==1)
+      if (cmd == 1)
       {
-      ledstripe.setLed(getValue(command, ' ', 2), strip.Color(getValue(command, ' ', 3), getValue(command, ' ', 4), getValue(command, ' ', 5)));
+        ledstripe.setLed(getValue(command, ' ', 2), strip.Color(getValue(command, ' ', 3), getValue(command, ' ', 4), getValue(command, ' ', 5)));
       }
-      else if (cmd==2)
+      else if (cmd == 2)
       {
         ledstripe.fillLed(strip.Color(getValue(command, ' ', 2), getValue(command, ' ', 3), getValue(command, ' ', 4)));
       }
@@ -144,7 +132,7 @@ void loop() {
       program = 0;
       break;
     case 5:
-      sub =  getValue(command, ' ', 1);
+      sub = getValue(command, ' ', 1);
       if (sub == 1)
       {
         Serial.write(0x02);
@@ -176,14 +164,13 @@ void loop() {
       if (ledShow == 1)
       {
         wait = getValue(command, ' ', 2);
-        ledstripe.rainbow(wait);
+        ledstripe.fasterRainbow(wait);
       }
 
       else if (ledShow == 2)
       {
         wait = getValue(command, ' ', 2);
         ledstripe.fasterTheaterChaseRainbow(wait);
-
       }
 
       else if (ledShow == 3)
@@ -216,9 +203,10 @@ void loop() {
       //do nothing
       break;
   }
-
-
-  delay(100);
+  if (!newSerialEvent)
+  {
+    delay(50);
+  }
 }
 
 float getValue(String data, char separator, int index)
@@ -256,6 +244,7 @@ void fillGlas(Pumpe *pumpe, float amount)
 
   while (loadCell < goalValue)
   {
+    ledstripe.fillLed(strip.Color(0, 0, 0));
     waage.update();
     loadCell = waage.getValue();
     pumpe->forward();
@@ -295,14 +284,14 @@ void fillGlas(Pumpe *pumpe, float amount)
         //Blink here
         ledstripe.setLed(pumpe->bottleLed, strip.Color(255, 0, 0));
 
-        for(int i:peristalicLed)
+        for (int i : peristalicLed)
         {
           ledstripe.setLed(i, strip.Color(255, 0, 0));
         }
-        
+
         delay(250);
         ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
-         for(int i:peristalicLed)
+        for (int i : peristalicLed)
         {
           ledstripe.setLed(i, strip.Color(0, 0, 0));
         }
@@ -340,5 +329,27 @@ void fillGlas(Pumpe *pumpe, float amount)
 
 
     delay(1000);
+  }
+}
+
+void checkForSerialEvent()
+{
+  newSerialEvent = false;
+  while (Serial.available()) {
+
+    char inChar = (char)Serial.read();
+    if (inChar == 0x02) {
+      zaehler = 0;
+      memcpy(oldCommand, command, sizeof(command));
+    }
+    else if (inChar == 0x03) {
+      newSerialEvent = true;
+      command[zaehler] = '\0';
+      break;
+    }
+    else {
+      command[zaehler] = inChar;
+      zaehler++;
+    }
   }
 }

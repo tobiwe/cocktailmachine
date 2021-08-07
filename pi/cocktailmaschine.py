@@ -148,6 +148,7 @@ def updateProductionWindow(order, window):
     weight = 0
 
     while weight<400 or weight>550:
+        time.sleep(0.5)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
@@ -258,12 +259,12 @@ def sendString(command):
     ser.write(b'\n')
 
 def sendCommand(command):
-    time.sleep(0.01)
+    time.sleep(0.1)
     ser.write(b'\x02')
     ser.write(command.encode())
     ser.write(b'\x03')
     ser.flush()
-    time.sleep(0.01)
+    time.sleep(0.1)
     #print("Send " + command + "...")
 
 def receiveCommand():
@@ -311,7 +312,7 @@ showCommand = "6 1 5"
 
 # test or productive environment?
 #ser = serial.Serial("/dev/ttyACM0", 9600)
-ser = serial.Serial("COM4", 9600)
+ser = serial.Serial("COM3", 9600)
 
 time.sleep(2)
 

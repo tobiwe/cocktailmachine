@@ -1,6 +1,9 @@
 #include "Led.hpp"
 #include "config.hpp"
 
+void checkForSerialEvent();
+extern bool newSerialEvent;
+
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -68,18 +71,18 @@ void Led::colorWipe(uint32_t color, int wait) {
 
 void Led::fasterBlinkOnOff(uint32_t color, int wait) {
 
-  static uint32_t lastColor =strip.Color(0,0,0);
- 
+  static uint32_t lastColor = strip.Color(0, 0, 0);
+
   if (millis() - lastUpdate > wait)
   {
-      if(lastColor == color)
-      {
-        color = strip.Color(0,0,0);
-      }
-      strip.fill(color);         
-      strip.show();  
-      lastColor = color;
-      lastUpdate = millis();                       
+    if (lastColor == color)
+    {
+      color = strip.Color(0, 0, 0);
+    }
+    strip.fill(color);
+    strip.show();
+    lastColor = color;
+    lastUpdate = millis();
   }
 }
 
@@ -134,6 +137,41 @@ void Led::rainbow(int wait) {
     }
     strip.show(); // Update strip with new contents
     delay(wait);  // Pause for a moment
+  }
+}
+
+// Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
+void Led::fasterRainbow(int wait) {
+  static long oldFirstPixelHue = 0;
+
+  if(oldFirstPixelHue>=5 * 65536)
+  {
+    oldFirstPixelHue = 0;
+  }
+
+  for (long firstPixelHue = oldFirstPixelHue; firstPixelHue < 5 * 65536; firstPixelHue += 256) {
+   
+    for (int i = 0; i < strip.numPixels(); i++) { // For each pixel in strip...
+      // Offset pixel hue by an amount to make one full revolution of the
+      // color wheel (range of 65536) along the length of the strip
+      // (strip.numPixels() steps):
+      int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
+      // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
+      // optionally add saturation and value (brightness) (each 0 to 255).
+      // Here we're using just the single-argument hue variant. The result
+      // is passed through strip.gamma32() to provide 'truer' colors
+      // before assigning to each pixel:
+      strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
+    }
+    strip.show(); // Update strip with new contents
+    delay(wait);  // Pause for a moment
+
+    checkForSerialEvent();
+    if(newSerialEvent)
+    {
+       oldFirstPixelHue = firstPixelHue;
+       break;
+    }
   }
 }
 
