@@ -10,6 +10,8 @@ int airLed[4] = { 13, 12, 15, 14};
 int bottleLed[6] = {6, 7, 8, 9, 10, 11};
 int glasLed = 16;
 
+
+char newCommand[20];
 char command[20];
 int program = 0;
 int old = 0;
@@ -17,6 +19,8 @@ char oldCommand[20];
 
 int zaehler = 0;
 bool newSerialEvent = false;
+
+bool switchtoOldProgram = false;
 
 
 Waage waage;
@@ -78,12 +82,26 @@ void loop() {
   waage.update();
 
   checkForSerialEvent();
-
   if (newSerialEvent)
   {
     old = program;
+    memcpy(oldCommand, command, sizeof(command));
+    memcpy(command, newCommand, sizeof(newCommand));
     program = getValue(command, ' ', 0);
     newSerialEvent = false;
+
+/** Debug
+    Serial.print("Old: ");
+    Serial.print(old);
+    Serial.print(", ");
+    Serial.print("Buffer");
+    Serial.println(oldCommand);
+
+    Serial.print("New: ");
+    Serial.print(program);
+    Serial.print(", ");
+    Serial.print("Buffer");
+    Serial.println(command);*/
   }
 
   float amount, mass;
@@ -100,7 +118,6 @@ void loop() {
       {
         ledstripe.fillLed(strip.Color(getValue(command, ' ', 2), getValue(command, ' ', 3), getValue(command, ' ', 4)));
       }
-      program = 0;
       break;
     case 2:
       motor = getValue(command, ' ', 1);
@@ -116,7 +133,6 @@ void loop() {
         pumpen[motor]->setSpeed(-1 * motorSpeed);
         pumpen[motor]->backward();
       }
-      program = 0;
       break;
     case 3:
       ventil = getValue(command, ' ', 1);
@@ -129,7 +145,6 @@ void loop() {
       pumpe = getValue(command, ' ', 1);
       amount = getValue(command, ' ', 2);
       fillGlas(pumpen[pumpe - 1], amount);
-      program = 0;
       break;
     case 5:
       sub = getValue(command, ' ', 1);
@@ -155,8 +170,7 @@ void loop() {
       {
         waage.calibrate();
       }
-      program = old;
-      memcpy(command, oldCommand, sizeof(oldCommand));
+      switchtoOldProgram = true;
       break;
     case 6:
       ledShow = getValue(command, ' ', 1);
@@ -203,9 +217,29 @@ void loop() {
       //do nothing
       break;
   }
-  if (!newSerialEvent)
+  if (program != 6)
   {
     delay(50);
+  }
+  else
+  { delay(1);
+  }
+
+  if (switchtoOldProgram)
+  {
+
+    //Toggle Program
+    int tmp = old;
+    old = program;
+    program = tmp;
+
+    //Toggle Commands
+    char tmpCommand[20];;
+    memcpy(tmpCommand, command, sizeof(command));
+    memcpy(command, oldCommand, sizeof(oldCommand));
+    memcpy(oldCommand, tmpCommand, sizeof(tmpCommand));
+
+    switchtoOldProgram = false;
   }
 }
 
@@ -325,30 +359,25 @@ void fillGlas(Pumpe *pumpe, float amount)
     Serial.print("finish");
     Serial.write(0x03);
     finished = false;
-
-
-
-    delay(1000);
+    delay(100);
   }
 }
 
 void checkForSerialEvent()
 {
-  newSerialEvent = false;
   while (Serial.available()) {
 
     char inChar = (char)Serial.read();
     if (inChar == 0x02) {
       zaehler = 0;
-      memcpy(oldCommand, command, sizeof(command));
     }
     else if (inChar == 0x03) {
       newSerialEvent = true;
-      command[zaehler] = '\0';
+      newCommand[zaehler] = '\0';
       break;
     }
     else {
-      command[zaehler] = inChar;
+      newCommand[zaehler] = inChar;
       zaehler++;
     }
   }

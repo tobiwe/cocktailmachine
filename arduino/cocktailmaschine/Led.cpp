@@ -144,13 +144,12 @@ void Led::rainbow(int wait) {
 void Led::fasterRainbow(int wait) {
   static long oldFirstPixelHue = 0;
 
-  if(oldFirstPixelHue>=5 * 65536)
+  if (oldFirstPixelHue >= 327424)
   {
     oldFirstPixelHue = 0;
   }
 
   for (long firstPixelHue = oldFirstPixelHue; firstPixelHue < 5 * 65536; firstPixelHue += 256) {
-   
     for (int i = 0; i < strip.numPixels(); i++) { // For each pixel in strip...
       // Offset pixel hue by an amount to make one full revolution of the
       // color wheel (range of 65536) along the length of the strip
@@ -162,15 +161,16 @@ void Led::fasterRainbow(int wait) {
       // is passed through strip.gamma32() to provide 'truer' colors
       // before assigning to each pixel:
       strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
+      oldFirstPixelHue = firstPixelHue;
     }
+
     strip.show(); // Update strip with new contents
     delay(wait);  // Pause for a moment
-
+  
     checkForSerialEvent();
-    if(newSerialEvent)
+    if (newSerialEvent)
     {
-       oldFirstPixelHue = firstPixelHue;
-       break;
+      break;
     }
   }
 }

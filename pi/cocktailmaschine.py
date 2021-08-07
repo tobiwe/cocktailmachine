@@ -92,7 +92,7 @@ def openRefillWindow(ingredient):
 
 def openPrductionWindow(order):
 
-    sendCommand("1 2 0 0 0")
+    #sendCommand("1 2 0 0 0")
     productionWindow = Toplevel()
     productionWindow.geometry('1024x576')
     productionWindow.resizable(0, 0)
@@ -148,7 +148,6 @@ def updateProductionWindow(order, window):
     weight = 0
 
     while weight<400 or weight>550:
-        time.sleep(0.5)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
@@ -311,8 +310,8 @@ drinks = json.load(drinkFile)
 showCommand = "6 1 5"
 
 # test or productive environment?
-#ser = serial.Serial("/dev/ttyACM0", 9600)
-ser = serial.Serial("COM3", 9600)
+ser = serial.Serial("/dev/ttyACM0", 9600)
+#ser = serial.Serial("COM3", 9600)
 
 time.sleep(2)
 
