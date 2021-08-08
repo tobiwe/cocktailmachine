@@ -11,8 +11,8 @@ class Luftpumpe : public Pumpe
     Ventil ventil;
     Luftpumpe (Type, int, int, int, int, int, Ventil, bool);
     void stop();
+    void forward();
+    void backward();
 };
 
 #endif
-
-

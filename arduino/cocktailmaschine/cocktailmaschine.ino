@@ -61,17 +61,15 @@ void setup() {
     }
     else
     {
-      p->setSpeed(255);
+      p->setSpeed(150);
     }
   }
 
   for (Ventil v : ventile)
   {
     v.setup();
-    v.open();
-    delay(10);
     v.close();
-    delay(10);
+    delay(100);
   }
 
   ledstripe.setup();
@@ -90,18 +88,18 @@ void loop() {
     program = getValue(command, ' ', 0);
     newSerialEvent = false;
 
-/** Debug
-    Serial.print("Old: ");
-    Serial.print(old);
-    Serial.print(", ");
-    Serial.print("Buffer");
-    Serial.println(oldCommand);
+    /** Debug
+        Serial.print("Old: ");
+        Serial.print(old);
+        Serial.print(", ");
+        Serial.print("Buffer");
+        Serial.println(oldCommand);
 
-    Serial.print("New: ");
-    Serial.print(program);
-    Serial.print(", ");
-    Serial.print("Buffer");
-    Serial.println(command);*/
+        Serial.print("New: ");
+        Serial.print(program);
+        Serial.print(", ");
+        Serial.print("Buffer");
+        Serial.println(command);*/
   }
 
   float amount, mass;
@@ -264,7 +262,6 @@ float getValue(String data, char separator, int index)
 
 void fillGlas(Pumpe *pumpe, float amount)
 {
-  delay(1000);
   long startTime = millis();
   long lastTime = startTime;
   float loadCell = waage.getValue();
@@ -344,8 +341,10 @@ void fillGlas(Pumpe *pumpe, float amount)
       startTime = millis();
       lastTime = startTime;
     }
-    if (loadCell >= goalValue) finished = true;
-
+    if (loadCell >= goalValue)
+    {
+      finished = true;
+    }
   }
 
 
@@ -354,6 +353,25 @@ void fillGlas(Pumpe *pumpe, float amount)
     pumpe->stop();
     ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
     ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
+
+    //Wait till weight stays the same
+    bool valueChange = true;
+    float first, second;
+    while (valueChange)
+    {
+      first = waage.getValue();
+      int startTime = millis();
+      while (millis() - startTime < 500)
+      {
+        waage.update();
+      }
+      second = waage.getValue();
+
+      if ((second - first) < 0.1)
+      {
+        valueChange = false;
+      }
+    }
 
     Serial.write(0x02);
     Serial.print("finish");

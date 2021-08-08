@@ -1,86 +1,116 @@
 [
   {
-  "name":"Gin Tonic",
-  "ingredients": [
-    { "unit": "g",
-      "amount": 45,
-      "ingredient": "gin", 
-      "ingredientText": "Gin" },
-    { "unit": "g",
-      "amount": 150,
-      "ingredient": "tonic water",
-      "ingredientText": "Tonic Water"  }
-  ]},
+    "name": "Gin Tonic",
+    "ingredients": [
+      {
+        "unit": "g",
+        "amount": 40,
+        "ingredient": "gin",
+        "ingredientText": "Gin"
+      },
+      {
+        "unit": "g",
+        "amount": 150,
+        "ingredient": "tonic water",
+        "ingredientText": "Tonic Water"
+      }
+    ]
+  },
   {
-  "name":"Mojito",
-  "ingredients": [
-    { "unit": "g",
-      "amount": 45,
-      "ingredient": "bacardi",
-      "ingredientText": "Bacardi" },
-      { "unit": "g",
+    "name": "Mojito",
+    "ingredients": [
+      {
+        "unit": "g",
+        "amount": 40,
+        "ingredient": "bacardi",
+        "ingredientText": "Bacardi"
+      },
+      {
+        "unit": "g",
+        "amount": 5,
+        "ingredient": "lemon juice",
+        "ingredientText": "Limettensaft"
+      },
+      {
+        "unit": "g",
         "amount": 60,
         "ingredient": "soda",
-        "ingredientText": "Sprudel" },
-    { "unit": "g",
-      "amount": 5,
-      "ingredient": "lemon juice", 
-      "ingredientText": "Limettensaft" }
-  ]
+        "ingredientText": "Sprudel"
+      }
+    ]
   },
   {
-  "name":"Moscow Mule",
-  "ingredients": [
-    { "unit": "g",
-      "amount": 45,
-      "ingredient": "vodka",
-      "ingredientText": "Vodka"  },
-    { "unit": "g",
-      "amount": 150,
-      "ingredient": "ginger beer",
-      "ingredientText": "Ginger Beer" }
-  ]
+    "name": "Moscow Mule",
+    "ingredients": [
+      {
+        "unit": "g",
+        "amount": 40,
+        "ingredient": "vodka",
+        "ingredientText": "Vodka"
+      },
+      {
+        "unit": "g",
+        "amount": 150,
+        "ingredient": "ginger beer",
+        "ingredientText": "Ginger Beer"
+      }
+    ]
   },
   {
-  "name":"Virgin Gin Tonic",
-  "ingredients": [
-    { "unit": "g",
-      "amount": 190,
-      "ingredient": "soda",
-      "ingredientText": "Sprudel"  },
-    { "unit": "g",
-      "amount": 5,
-      "ingredient": "lemon juice",
-      "ingredientText": "Limettensaft"  }
-  ]},
-  {
-  "name":"Vigin Mojito",
-  "ingredients": [
-    { "unit": "g",
-      "amount": 190,
-      "ingredient": "ginger ale",
-      "ingredientText": "Ginger Ale" },
-    { "unit": "g",
-      "amount": 5,
-      "ingredient": "lemon juice",
-      "ingredientText": "Limettensaft"  }
-  ]
+    "name": "Virgin Gin Tonic",
+    "ingredients": [
+      {
+        "unit": "g",
+        "amount": 5,
+        "ingredient": "lemon juice",
+        "ingredientText": "Limettensaft"
+      },
+      {
+        "unit": "g",
+        "amount": 185,
+        "ingredient": "soda",
+        "ingredientText": "Sprudel"
+      }
+    ]
   },
   {
-  "name":"Virgin Moscow Mule",
-  "ingredients": [
-    { "unit": "g",
-      "amount": 150,
-      "ingredient": "ginger beer",
-      "ingredientText": "Ginger Beer"  },
-    { "unit": "g",
-      "amount": 30,
-      "ingredient": "soda",
-      "ingredientText": "Sprudel"  },
-    { "unit": "g",
-      "amount": 5,
-      "ingredient": "lemon juice",
-      "ingredientText": "Limettensaft"  }
-  ]
+    "name": "Vigin Mojito",
+    "ingredients": [
+      {
+        "unit": "g",
+        "amount": 5,
+        "ingredient": "lemon juice",
+        "ingredientText": "Limettensaft"
+      },
+      {
+        "unit": "g",
+        "amount": 185,
+        "ingredient": "ginger ale",
+        "ingredientText": "Ginger Ale"
+      }
+    ]
+  },
+  {
+    "name": "Virgin Moscow Mule",
+    "ingredients": [
+      {
+        "unit": "g",
+        "amount": 5,
+        "ingredient": "lemon juice",
+        "ingredientText": "Limettensaft"
+      },
+      {
+        "unit": "g",
+        "amount": 30,
+        "ingredient": "soda",
+        "ingredientText": "Sprudel"
+      },
+      {
+        "unit": "g",
+        "amount": 150,
+        "ingredient": "ginger beer",
+        "ingredientText": "Ginger Beer"
+      }
+    ]
   }
 ]

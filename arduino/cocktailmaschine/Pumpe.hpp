@@ -20,13 +20,11 @@ class Pumpe
     Pumpe(Type, int, int, int, int, int, bool);
     void setup();
     void setSpeed(int);
-    void forward();
-    void backward();
+    void virtual forward();
+    void virtual backward();
     void virtual stop();
     bool isInverse();
     Type getType();
 };
 
 #endif
-
-
