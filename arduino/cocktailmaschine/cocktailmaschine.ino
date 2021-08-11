@@ -262,6 +262,7 @@ float getValue(String data, char separator, int index)
 
 void fillGlas(Pumpe *pumpe, float amount)
 {
+  delay(100);
   long startTime = millis();
   long lastTime = startTime;
   float loadCell = waage.getValue();
@@ -271,7 +272,7 @@ void fillGlas(Pumpe *pumpe, float amount)
   float startValue = loadCell;
   float goalValue = startValue + amount;
 
-  int interval = 3000;
+  int interval = 5000;
 
   while (loadCell < goalValue)
   {
@@ -361,7 +362,7 @@ void fillGlas(Pumpe *pumpe, float amount)
     {
       first = waage.getValue();
       int startTime = millis();
-      while (millis() - startTime < 500)
+      while (millis() - startTime < 1000)
       {
         waage.update();
       }

@@ -21,6 +21,7 @@ def commandButtonClicked():
 
 def exitButtonClicked():
     #print("Programm wird beendet")
+    sendCommand("1 2 0 0 0")
     ser.close()
     root.quit()
 
@@ -34,6 +35,53 @@ def refillButtonClicked(window):
     refillWindowOpen = False
 
     window.destroy()
+
+def pumpButtonClicked():
+    window = Toplevel()
+    window.geometry("1024x576")
+    window.resizable(0, 0)
+    window.wm_title('Pump')
+    root.attributes('-fullscreen', True)
+
+    Grid.rowconfigure(window, 0, weight=1)
+    Grid.rowconfigure(window, 1, weight=1)
+    Grid.rowconfigure(window, 2, weight=1)
+    Grid.rowconfigure(window, 3, weight=1)
+    Grid.rowconfigure(window, 4, weight=1)
+    Grid.rowconfigure(window, 5, weight=1)
+    Grid.rowconfigure(window, 6, weight=1)
+
+
+    Grid.columnconfigure(window, 0, weight=1)
+    Grid.columnconfigure(window, 1, weight=1)
+    Grid.columnconfigure(window, 2, weight=1)
+    Grid.columnconfigure(window, 3, weight=1)
+
+
+
+    for i in range(0,6):
+
+        TextLabel = Label(window, font=myFont, text="Motor "+str(i))
+
+        Forward = Button(window, font=myFont, text="Forward",
+                                bg="#ee0000", activebackground="#ee0000", command=lambda i=i: sendCommand("2 " + str(i) + " 255"))
+        Backward = Button(window, font=myFont, text="Backward",
+                                bg="#ee0000", activebackground="#ee0000", command=lambda i=i: sendCommand("2 " + str(i) + " -255"))
+        Stop = Button(window, font=myFont, text="Stop",
+                                bg="#ee0000", activebackground="#ee0000", command=lambda i=i: sendCommand("2 " + str(i) + " 0"))
+
+        TextLabel.grid(row=i, column=0, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+        #Forward.grid(row=i, column=1, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+        Backward.grid(row=i, column=2, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+        Stop.grid(row=i, column=3, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+
+
+    BackButton = Button(window, font=myFont, text="Back", bg="#ee0000",
+                        activebackground="#ee0000", command=window.destroy)
+    BackButton.grid(row=6, column=0, padx=10, pady=10,
+                    ipadx=50, ipady=50, sticky="nesw")
+
+    window.attributes('-fullscreen', True)
 
 
 def settingsButtonClicked():
@@ -68,9 +116,15 @@ def settingsButtonClicked():
                         activebackground="#ee0000", command=window.destroy)
     BackButton.grid(row=1, column=0, padx=10, pady=10,
                     ipadx=50, ipady=50, sticky="nesw")
+
+    PumpButton = Button(window, font=myFont, text="Pumpen", bg="#ee0000",
+                        activebackground="#ee0000", command=pumpButtonClicked)
+    PumpButton.grid(row=1, column=1, padx=10, pady=10,
+                    ipadx=50, ipady=50, sticky="nesw")
+
     ExitButton = Button(window, font=myFont, text="Exit", bg="#ee0000",
                         activebackground="#ee0000", command=exitButtonClicked)
-    ExitButton.grid(row=1, column=1, padx=10, pady=10,
+    ExitButton.grid(row=1, column=2, padx=10, pady=10,
                     ipadx=50, ipady=50, sticky="nesw")
 
     window.attributes('-fullscreen', True)
@@ -176,12 +230,21 @@ def updateProductionWindow(order, window):
     percent = "Gib mir dein Glas"
     weight = 0
 
-    while weight < 400 or weight > 550:
+    while weight < 400 or weight > 450:
+        time.sleep(0.1)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
         weight = float(answer)
         #print("Gewicht: " + str(weight))
+
+    weight = 0
+    while weight < 400 or weight > 450:
+        time.sleep(0.1)
+        sendCommand("5 1")
+        waitForAnser = True
+        answer = receiveCommand()
+        weight = float(answer)
 
     for ingredient in order["ingredients"]:
         pumps = getPump(ingredient["ingredient"])
@@ -236,6 +299,7 @@ def updateProductionWindow(order, window):
 
     weight = 400
     while weight > 100:
+        time.sleep(0.1)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
@@ -358,7 +422,7 @@ if os.environ.get('DISPLAY', '') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 root = Tk()
-#root.config(cursor="none", background="black")
+root.config(cursor="none", background="black")
 root.geometry("1024x576")
 root.resizable(0, 0)
 root.wm_title('Cocktail-Maschine')
@@ -377,8 +441,8 @@ buttler = PhotoImage(file='buttler.png')
 canvas = Canvas(root, width=1024, height=576, highlightthickness=0)
 backgrouundCanvas = canvas.create_image(0, 0, anchor="nw", image=bg)
 
-myFont = tkFont.Font(size=24, family="Franklin Gothic Medium")
-headingFont = tkFont.Font(size=34, family="Franklin Gothic Medium")
+myFont = tkFont.Font(size=22, family="Franklin Gothic Medium")
+headingFont = tkFont.Font(size=32, family="Franklin Gothic Medium")
 
 rowNumber = 0
 columnNumber = 0
