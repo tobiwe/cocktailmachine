@@ -20,8 +20,21 @@ void fillTest()
   // print a random number from 1 to 10
   long randNumber = random(1, 5);
   bool refill = false;
-  delay(500 * randNumber);
 
+  long startMilli = millis();
+
+  while(millis()-startMilli<(5000))
+  {
+    if (Serial.available())
+    {
+      String test = Serial.readString();
+      if (test == "interrupt\n")
+      {
+        break;
+      }
+    }
+  }
+  
   if (randNumber % 2 == 0)
   {
     refill = true;
@@ -38,7 +51,6 @@ void fillTest()
       refill = false;
     }
   }
-  delay(500 * randNumber);
   Serial.write(0x02);
   Serial.print("finish");
   Serial.write(0x03);
@@ -99,12 +111,12 @@ void loop() {
         fillTest();
         break;
       case 5:
-        float randNumber = random(50, 450);
-        bool refill = false;
-        delay(10);
+        int randNumber = random(0, 10);
+        int value[] = {10,50,100,150,200,250,300,350,400,450};
+        delay(5);
 
         Serial.write(0x02);
-        Serial.print(randNumber);
+        Serial.print(value[randNumber]);
         Serial.write(0x03);
 
         break;

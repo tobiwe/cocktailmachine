@@ -25,6 +25,13 @@ def exitButtonClicked():
     ser.close()
     root.quit()
 
+def interruptButtonClicked():
+    print("Interrupt")
+    global interrupt
+    interrupt = True
+    interruptButton.configure(state="disabled")
+    sendString("interrupt")
+
 
 def refillButtonClicked(window):
     sendString("done")
@@ -167,6 +174,9 @@ def openRefillWindow(ingredient):
 
 def openPrductionWindow(order):
 
+    global interrupt
+    interrupt = False
+
     #sendCommand("1 2 0 0 0")
     productionWindow = Toplevel()
     productionWindow.geometry('1024x576')
@@ -187,6 +197,11 @@ def openPrductionWindow(order):
         512, 250, text=order["name"], font=headingFont, fill="white")
     process = productionCanvas.create_text(
         512, 350, text="Gleicht geht'los!", font=headingFont, fill="white")
+
+    global interruptButton
+    interruptButton = Button(productionWindow, state="disabled", font=myFont, text="Abbrechen", bg="#ee0000", foreground="white",
+                          activebackground="#ee0000", command= interruptButtonClicked)
+    interruptButton.place(x=512, y=420, anchor=CENTER)
 
     productionWindow.after(100, updateValue, productionWindow, process)
     thread = threading.Thread(
@@ -247,6 +262,8 @@ def updateProductionWindow(order, window):
         weight = float(answer)
 
     for ingredient in order["ingredients"]:
+        if(interrupt):
+            break;
         pumps = getPump(ingredient["ingredient"])
         percent = (" Ein bisschen " + ingredient["ingredientText"] + "...")
 
@@ -255,6 +272,8 @@ def updateProductionWindow(order, window):
             amount = amount / 2
 
         for p in pumps:
+            if(interrupt):
+                break;
 
             pumpValue = 0
 
@@ -280,6 +299,7 @@ def updateProductionWindow(order, window):
                 pumpValue = 10
 
             sendCommand("4 " + str(pumpValue) + " " + str(amount))
+            interruptButton.configure(state="normal")
 
             waitForAnser = True
 
@@ -292,8 +312,8 @@ def updateProductionWindow(order, window):
                     global refillIngredient
                     refillIngredient = ingredient
                 if result == "finish":
+                    interruptButton.configure(state="disabled")
                     waitForAnser = False
-
     percent = "Fertig! Prost!"
     sendCommand("6 5 500 0 255 0")
 

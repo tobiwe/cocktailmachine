@@ -271,6 +271,7 @@ void fillGlas(Pumpe *pumpe, float amount)
   bool refill = false;
   float startValue = loadCell;
   float goalValue = startValue + amount;
+  bool interrupt = false;
 
   int interval = 5000;
 
@@ -342,9 +343,19 @@ void fillGlas(Pumpe *pumpe, float amount)
       startTime = millis();
       lastTime = startTime;
     }
+
     if (loadCell >= goalValue)
     {
       finished = true;
+    }
+
+    if (Serial.available())
+    {
+      String test = Serial.readString();
+      if (test == "interrupt\n")
+      {
+        finished = true;
+      }
     }
   }
 
@@ -362,7 +373,7 @@ void fillGlas(Pumpe *pumpe, float amount)
     {
       first = waage.getValue();
       int startTime = millis();
-      while (millis() - startTime < 1000)
+      while (millis() - startTime < 2000)
       {
         waage.update();
       }
