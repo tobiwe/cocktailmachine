@@ -355,6 +355,7 @@ void fillGlas(Pumpe *pumpe, float amount)
       if (test == "interrupt\n")
       {
         finished = true;
+        break;
       }
     }
   }
@@ -372,10 +373,11 @@ void fillGlas(Pumpe *pumpe, float amount)
     while (valueChange)
     {
       first = waage.getValue();
-      int startTime = millis();
+      long startTime = millis();
       while (millis() - startTime < 2000)
       {
         waage.update();
+        delay(10);
       }
       second = waage.getValue();
 

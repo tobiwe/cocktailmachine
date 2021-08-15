@@ -21,7 +21,7 @@
     "ingredients": [
       {
         "unit": "g",
-        "amount": 40,
+        "amount": 30,
         "ingredient": "bacardi",
         "ingredientText": "Bacardi"
       },
@@ -33,7 +33,7 @@
       },
       {
         "unit": "g",
-        "amount": 60,
+        "amount": 70,
         "ingredient": "soda",
         "ingredientText": "Sprudel"
       }
