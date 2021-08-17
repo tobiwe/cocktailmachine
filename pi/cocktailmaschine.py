@@ -245,17 +245,8 @@ def updateProductionWindow(order, window):
     percent = "Gib mir dein Glas"
     weight = 0
 
-    while weight < 400 or weight > 450:
-        time.sleep(0.1)
-        sendCommand("5 1")
-        waitForAnser = True
-        answer = receiveCommand()
-        weight = float(answer)
-        #print("Gewicht: " + str(weight))
-
-    weight = 0
-    while weight < 400 or weight > 450:
-        time.sleep(0.1)
+    while weight < 400 or weight > 900:
+        time.sleep(0.2)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
@@ -318,13 +309,12 @@ def updateProductionWindow(order, window):
     sendCommand("6 5 500 0 255 0")
 
     weight = 400
-    while weight > 100:
-        time.sleep(0.1)
+    while weight > 200:
+        time.sleep(0.2)
         sendCommand("5 1")
         waitForAnser = True
         answer = receiveCommand()
         weight = float(answer)
-        #print("Gewicht: " + str(weight))
 
     sendCommand("1 2 0 0 0")
     sendCommand(showCommand)
@@ -429,7 +419,7 @@ config = {
 drinkFile = open("drinks.json", "r")
 drinks = json.load(drinkFile)
 
-showCommand = "6 1 5"
+showCommand = "6 1 10"
 
 # test or productive environment?
 ser = serial.Serial("/dev/ttyACM0", 9600)

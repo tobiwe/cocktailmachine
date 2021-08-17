@@ -54,7 +54,9 @@ void Pumpe:: backward() {
     digitalWrite(this->in2, HIGH);
   }
 }
-void Pumpe::stop() {
+
+void Pumpe::stop(bool ventil)
+{
   ledstripe.setLed(this->led, strip.Color(0, 0, 0));
   digitalWrite(this->in1, HIGH);
   digitalWrite(this->in2, HIGH);
@@ -73,5 +75,3 @@ Type Pumpe::getType()
 {
   return this->type;
 }
-
-

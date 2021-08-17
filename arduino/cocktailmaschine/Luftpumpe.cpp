@@ -7,12 +7,15 @@ Luftpumpe::Luftpumpe(Type type, int in1, int in2, int ena, int led, int bottleLe
   this->ventil = ventil;
 }
 
-void Luftpumpe::stop() {
+void Luftpumpe::stop(bool ventil) {
   digitalWrite(this->in1, HIGH);
   digitalWrite(this->in2, HIGH);
-  this->ventil.open();
-  delay(1500);
-  this->ventil.close();
+  if (ventil)
+  {
+    this->ventil.open();
+    delay(3000);
+    this->ventil.close();
+  }
 }
 
 void Luftpumpe::forward()

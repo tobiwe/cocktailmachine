@@ -22,7 +22,7 @@ class Pumpe
     void setSpeed(int);
     void virtual forward();
     void virtual backward();
-    void virtual stop();
+    void virtual stop(bool ventil=true);
     bool isInverse();
     Type getType();
 };

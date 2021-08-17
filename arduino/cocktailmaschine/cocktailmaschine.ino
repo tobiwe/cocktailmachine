@@ -59,11 +59,12 @@ void setup() {
     {
       p->setSpeed(255);
     }
-    else
-    {
-      p->setSpeed(150);
-    }
   }
+
+  a1.setSpeed(220);
+  a2.setSpeed(220);
+  a3.setSpeed(200);
+  a4.setSpeed(200);
 
   for (Ventil v : ventile)
   {
@@ -273,7 +274,7 @@ void fillGlas(Pumpe *pumpe, float amount)
   float goalValue = startValue + amount;
   bool interrupt = false;
 
-  int interval = 5000;
+  int interval = 8000;
 
   while (loadCell < goalValue)
   {
@@ -300,7 +301,7 @@ void fillGlas(Pumpe *pumpe, float amount)
 
     if (refill)
     {
-      pumpe->stop();
+      pumpe->stop(false);
       ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
       ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
 
@@ -363,7 +364,13 @@ void fillGlas(Pumpe *pumpe, float amount)
 
   if (finished)
   {
-    pumpe->stop();
+    pumpe->stop(false);
+    if (pumpe->getType() == AIR)
+    {
+      Luftpumpe* air = (Luftpumpe*)pumpe;
+      air->ventil.open();
+    }
+
     ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
     ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
 
@@ -384,6 +391,11 @@ void fillGlas(Pumpe *pumpe, float amount)
       if ((second - first) < 0.1)
       {
         valueChange = false;
+        if (pumpe->getType() == AIR)
+        {
+          Luftpumpe* air = (Luftpumpe*)pumpe;
+          air->ventil.close();
+        }
       }
     }
 

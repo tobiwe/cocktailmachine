@@ -4,13 +4,13 @@
     "ingredients": [
       {
         "unit": "g",
-        "amount": 40,
+        "amount": 30,
         "ingredient": "gin",
         "ingredientText": "Gin"
       },
       {
         "unit": "g",
-        "amount": 150,
+        "amount": 140,
         "ingredient": "tonic water",
         "ingredientText": "Tonic Water"
       }
@@ -33,7 +33,7 @@
       },
       {
         "unit": "g",
-        "amount": 70,
+        "amount": 90,
         "ingredient": "soda",
         "ingredientText": "Sprudel"
       }
@@ -44,13 +44,13 @@
     "ingredients": [
       {
         "unit": "g",
-        "amount": 40,
+        "amount": 30,
         "ingredient": "vodka",
         "ingredientText": "Vodka"
       },
       {
         "unit": "g",
-        "amount": 150,
+        "amount": 140,
         "ingredient": "ginger beer",
         "ingredientText": "Ginger Beer"
       }
@@ -67,14 +67,14 @@
       },
       {
         "unit": "g",
-        "amount": 185,
+        "amount": 165,
         "ingredient": "tonic water",
         "ingredientText": "Tonic Water"
       }
     ]
   },
   {
-    "name": "Vigin Mojito",
+    "name": "Virgin Mojito",
     "ingredients": [
       {
         "unit": "g",
@@ -84,7 +84,7 @@
       },
       {
         "unit": "g",
-        "amount": 185,
+        "amount": 165,
         "ingredient": "ginger ale",
         "ingredientText": "Ginger Ale"
       }
@@ -107,7 +107,7 @@
       },
       {
         "unit": "g",
-        "amount": 150,
+        "amount": 130,
         "ingredient": "ginger beer",
         "ingredientText": "Ginger Beer"
       }
