@@ -56,6 +56,11 @@ enum Type { PERISTALIC, AIR};
 #define VENTIL3 44
 #define VENTIL4 45
 
+#define DRUCK1 A0
+#define DRUCK2 A1
+#define DRUCK3 A2
+#define DRUCK4 A3
+
 #define WAAGE_DT 46
 #define WAAGE_SCK 47
 

@@ -12,8 +12,8 @@ class Led
 {
   public:
     void setup();
-    void setLed(int, uint32_t);
-    void fillLed(uint32_t);
+    void setLed(int, uint32_t, bool show =true);
+    void fillLed(uint32_t, bool show =true);
     void theaterChaseRainbow(int wait);
     void fasterTheaterChaseRainbow(int wait);
     void rainbow(int wait);

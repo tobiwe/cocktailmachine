@@ -7,6 +7,8 @@ import serial
 
 import threading
 
+maintenance = TRUE
+
 ## METHODS ##
 ### GUI ###
 
@@ -78,7 +80,9 @@ def pumpButtonClicked():
                                 bg="#ee0000", activebackground="#ee0000", command=lambda i=i: sendCommand("2 " + str(i) + " 0"))
 
         TextLabel.grid(row=i, column=0, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
-        #Forward.grid(row=i, column=1, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+        if(maintenance):
+            Forward.grid(row=i, column=1, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+
         Backward.grid(row=i, column=2, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
         Stop.grid(row=i, column=3, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
 
@@ -423,7 +427,7 @@ showCommand = "6 1 10"
 
 # test or productive environment?
 ser = serial.Serial("/dev/ttyACM0", 9600)
-#ser = serial.Serial("COM3", 9600)
+#ser = serial.Serial("COM4", 9600)
 
 time.sleep(2)
 

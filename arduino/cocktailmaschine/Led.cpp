@@ -37,18 +37,24 @@ void Led::setup()
   strip.setBrightness(200); // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
-void Led::setLed(int led, uint32_t color)
+void Led::setLed(int led, uint32_t color, bool show)
 {
   //strip.clear();
   strip.setPixelColor(led, color);
-  strip.show();
+  if (show)
+  {
+    strip.show();
+  }
 }
 
-void Led::fillLed(uint32_t color)
+void Led::fillLed(uint32_t color, bool show)
 {
   //strip.clear();
   strip.fill(color);
-  strip.show();
+  if (show)
+  {
+    strip.show();
+  }
 }
 
 
@@ -166,7 +172,7 @@ void Led::fasterRainbow(int wait) {
 
     strip.show(); // Update strip with new contents
     delay(wait);  // Pause for a moment
-  
+
     checkForSerialEvent();
     if (newSerialEvent)
     {

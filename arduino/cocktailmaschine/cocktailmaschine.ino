@@ -3,13 +3,13 @@
 #include "Luftpumpe.hpp"
 #include "Led.hpp"
 #include "Ventil.hpp"
+#include "Drucksensor.hpp"
 #include "config.hpp"
 
 int peristalicLed[6] = { 5, 4, 3, 2, 1, 0};
 int airLed[4] = { 13, 12, 15, 14};
 int bottleLed[6] = {6, 7, 8, 9, 10, 11};
 int glasLed = 16;
-
 
 char newCommand[20];
 char command[20];
@@ -33,6 +33,13 @@ Ventil ventile[4] = {
   Ventil(VENTIL4)
 };
 
+Drucksensor sensoren[4] = {
+  Drucksensor(DRUCK1),
+  Drucksensor(DRUCK2),
+  Drucksensor(DRUCK3),
+  Drucksensor(DRUCK4),
+};
+
 
 Pumpe p1(PERISTALIC, MOTOR1_In1, MOTOR1_In2, MOTOR1_En, peristalicLed[0], bottleLed[0], false);
 Pumpe p2(PERISTALIC, MOTOR2_In1, MOTOR2_In2, MOTOR2_En, peristalicLed[1], bottleLed[1], false);
@@ -40,10 +47,10 @@ Pumpe p3(PERISTALIC, MOTOR3_In1, MOTOR3_In2, MOTOR3_En, peristalicLed[2], bottle
 Pumpe p4(PERISTALIC, MOTOR4_In1, MOTOR4_In2, MOTOR4_En, peristalicLed[3], bottleLed[3], true);
 Pumpe p5(PERISTALIC, MOTOR5_In1, MOTOR5_In2, MOTOR5_En, peristalicLed[4], bottleLed[4], false);
 Pumpe p6(PERISTALIC, MOTOR6_In1, MOTOR6_In2, MOTOR6_En, peristalicLed[5], bottleLed[5], true);
-Luftpumpe a1(AIR, MOTOR7_In1, MOTOR7_In2, MOTOR7_En, airLed[0], airLed[0], ventile[0], false);
-Luftpumpe a2(AIR, MOTOR8_In1, MOTOR8_In2, MOTOR8_En, airLed[1], airLed[1], ventile[1], false);
-Luftpumpe a3(AIR, MOTOR9_In1, MOTOR9_In2, MOTOR9_En, airLed[2], airLed[2], ventile[2], false);
-Luftpumpe a4(AIR, MOTOR10_In1, MOTOR10_In2, MOTOR10_En, airLed[3], airLed[3], ventile[3], false);
+Luftpumpe a1(AIR, MOTOR7_In1, MOTOR7_In2, MOTOR7_En, airLed[0], airLed[0], ventile[0], sensoren[0], false);
+Luftpumpe a2(AIR, MOTOR8_In1, MOTOR8_In2, MOTOR8_En, airLed[1], airLed[1], ventile[1], sensoren[1], false);
+Luftpumpe a3(AIR, MOTOR9_In1, MOTOR9_In2, MOTOR9_En, airLed[2], airLed[2], ventile[2], sensoren[2], false);
+Luftpumpe a4(AIR, MOTOR10_In1, MOTOR10_In2, MOTOR10_En, airLed[3], airLed[3], ventile[3], sensoren[3], false);
 
 Pumpe *pumpen[10] = {&p1, &p2, &p3, &p4, &p5, &p6, &a1, &a2, &a3, &a4};
 
@@ -69,8 +76,14 @@ void setup() {
   for (Ventil v : ventile)
   {
     v.setup();
+    v.open();
+    delay(1000);
     v.close();
-    delay(100);
+  }
+
+  for (Drucksensor s : sensoren)
+  {
+    s.setDefaultPressure(s.getValue());
   }
 
   ledstripe.setup();
@@ -274,12 +287,18 @@ void fillGlas(Pumpe *pumpe, float amount)
   float goalValue = startValue + amount;
   bool interrupt = false;
 
-  int interval = 8000;
+  int interval = 6000;
 
   while (loadCell < goalValue)
   {
     ledstripe.fillLed(strip.Color(0, 0, 0));
     waage.update();
+    if (pumpe->getType() == AIR)
+    {
+      Drucksensor *sensor = &(((Luftpumpe*)pumpe)->sensor);
+      sensor->update();
+    };
+
     loadCell = waage.getValue();
     pumpe->forward();
     ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 255));
@@ -290,10 +309,22 @@ void fillGlas(Pumpe *pumpe, float amount)
 
     if (actualTime - lastTime >= interval)
     {
+
       if (oldValue + 1 > loadCell)
       {
         refill = true;
       }
+
+      if (pumpe->getType() == AIR)
+      {
+        Drucksensor *sensor = &(((Luftpumpe*)pumpe)->sensor);
+        if (sensor->getValue() > sensor->getDefaultPressure() + 10)
+        {
+          refill = false;
+        }
+      }
+
+
       lastTime = actualTime;
       interval = 1000;
       oldValue = loadCell;
@@ -371,9 +402,7 @@ void fillGlas(Pumpe *pumpe, float amount)
       air->ventil.open();
     }
 
-    ledstripe.setLed(pumpe->bottleLed, strip.Color(0, 0, 0));
-    ledstripe.setLed(glasLed, strip.Color(0, 0, 0));
-
+    ledstripe.fillLed(strip.Color(255, 255, 255));
     //Wait till weight stays the same
     bool valueChange = true;
     float first, second;

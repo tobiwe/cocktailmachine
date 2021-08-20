@@ -2,9 +2,10 @@
 #include "Pumpe.hpp"
 #include "config.hpp"
 
-Luftpumpe::Luftpumpe(Type type, int in1, int in2, int ena, int led, int bottleLed, Ventil ventil, bool inverse) : Pumpe(type, in1, in2, ena, led, bottleLed, inverse)
+Luftpumpe::Luftpumpe(Type type, int in1, int in2, int ena, int led, int bottleLed, Ventil ventil, Drucksensor sensor, bool inverse) : Pumpe(type, in1, in2, ena, led, bottleLed, inverse)
 {
   this->ventil = ventil;
+  this->sensor = sensor;
 }
 
 void Luftpumpe::stop(bool ventil) {
@@ -21,6 +22,7 @@ void Luftpumpe::stop(bool ventil) {
 void Luftpumpe::forward()
 {
   this->ventil.close();
+  ledstripe.fillLed(strip.Color(255, 255, 255), false);
   ledstripe.setLed(this->led, strip.Color(0, 0, 255));
   if (!this->isInverse())
   {
@@ -34,6 +36,7 @@ void Luftpumpe::forward()
 }
 void Luftpumpe::backward() {
   this->ventil.close();
+  ledstripe.fillLed(strip.Color(255, 255, 255), false);
   ledstripe.setLed(this->led, strip.Color(0, 0, 255));
 
   if (!this->isInverse())
