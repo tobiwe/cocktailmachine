@@ -10,9 +10,9 @@
 class Luftpumpe : public Pumpe
 {
   public:
-    Drucksensor sensor;
+    Drucksensor *sensor;
     Ventil ventil;
-    Luftpumpe (Type, int, int, int, int, int, Ventil, Drucksensor, bool);
+    Luftpumpe (Type, int, int, int, int, int, Ventil, Drucksensor*, bool);
     void stop(bool ventil=true);
     void forward();
     void backward();

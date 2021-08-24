@@ -23,10 +23,12 @@ void Pumpe::setup()
 }
 void Pumpe::setSpeed(int motorSpeed)
 {
+  this->speed = motorSpeed;
   analogWrite(this->ena, motorSpeed);
 }
 void Pumpe:: forward()
 {
+  ledstripe.fillLed(strip.Color(255, 255, 255), false);
   ledstripe.setLed(this->led, strip.Color(0, 0, 255));
   if (!this->isInverse())
   {
@@ -40,6 +42,7 @@ void Pumpe:: forward()
   }
 }
 void Pumpe:: backward() {
+  ledstripe.fillLed(strip.Color(255, 255, 255), false);
   ledstripe.setLed(this->led, strip.Color(0, 0, 255));
 
   if (!this->isInverse())
@@ -57,7 +60,7 @@ void Pumpe:: backward() {
 
 void Pumpe::stop(bool ventil)
 {
-  ledstripe.setLed(this->led, strip.Color(0, 0, 0));
+  ledstripe.fillLed(strip.Color(255, 255, 255));
   digitalWrite(this->in1, HIGH);
   digitalWrite(this->in2, HIGH);
 }
@@ -74,4 +77,9 @@ bool Pumpe::isInverse()
 Type Pumpe::getType()
 {
   return this->type;
+}
+
+int Pumpe::getSpeed()
+{
+  return this->speed;
 }

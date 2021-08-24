@@ -13,6 +13,7 @@ class Pumpe
     int in2;
     int ena;
     bool inverse;
+    int speed;
 
   public:
     int led;
@@ -20,6 +21,7 @@ class Pumpe
     Pumpe(Type, int, int, int, int, int, bool);
     void setup();
     void setSpeed(int);
+    int getSpeed();
     void virtual forward();
     void virtual backward();
     void virtual stop(bool ventil=true);

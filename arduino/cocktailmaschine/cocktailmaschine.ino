@@ -47,10 +47,10 @@ Pumpe p3(PERISTALIC, MOTOR3_In1, MOTOR3_In2, MOTOR3_En, peristalicLed[2], bottle
 Pumpe p4(PERISTALIC, MOTOR4_In1, MOTOR4_In2, MOTOR4_En, peristalicLed[3], bottleLed[3], true);
 Pumpe p5(PERISTALIC, MOTOR5_In1, MOTOR5_In2, MOTOR5_En, peristalicLed[4], bottleLed[4], false);
 Pumpe p6(PERISTALIC, MOTOR6_In1, MOTOR6_In2, MOTOR6_En, peristalicLed[5], bottleLed[5], true);
-Luftpumpe a1(AIR, MOTOR7_In1, MOTOR7_In2, MOTOR7_En, airLed[0], airLed[0], ventile[0], sensoren[0], false);
-Luftpumpe a2(AIR, MOTOR8_In1, MOTOR8_In2, MOTOR8_En, airLed[1], airLed[1], ventile[1], sensoren[1], false);
-Luftpumpe a3(AIR, MOTOR9_In1, MOTOR9_In2, MOTOR9_En, airLed[2], airLed[2], ventile[2], sensoren[2], false);
-Luftpumpe a4(AIR, MOTOR10_In1, MOTOR10_In2, MOTOR10_En, airLed[3], airLed[3], ventile[3], sensoren[3], false);
+Luftpumpe a1(AIR, MOTOR7_In1, MOTOR7_In2, MOTOR7_En, airLed[0], airLed[0], ventile[0], &(sensoren[0]), false);
+Luftpumpe a2(AIR, MOTOR8_In1, MOTOR8_In2, MOTOR8_En, airLed[1], airLed[1], ventile[1], &(sensoren[1]), false);
+Luftpumpe a3(AIR, MOTOR9_In1, MOTOR9_In2, MOTOR9_En, airLed[2], airLed[2], ventile[2], &(sensoren[2]), false);
+Luftpumpe a4(AIR, MOTOR10_In1, MOTOR10_In2, MOTOR10_En, airLed[3], airLed[3], ventile[3], &(sensoren[3]), false);
 
 Pumpe *pumpen[10] = {&p1, &p2, &p3, &p4, &p5, &p6, &a1, &a2, &a3, &a4};
 
@@ -68,22 +68,27 @@ void setup() {
     }
   }
 
-  a1.setSpeed(220);
-  a2.setSpeed(220);
-  a3.setSpeed(200);
-  a4.setSpeed(200);
+  a1.setSpeed(150);
+  a2.setSpeed(150);
+  a3.setSpeed(150);
+  a4.setSpeed(150);
 
   for (Ventil v : ventile)
   {
     v.setup();
     v.open();
-    delay(1000);
+  }
+  delay(1000);
+  for (Ventil v : ventile)
+  {
+    v.setup();
     v.close();
   }
 
-  for (Drucksensor s : sensoren)
+  for (int i = 0; i < 4; i++)
   {
-    s.setDefaultPressure(s.getValue());
+    sensoren[i].update();
+    sensoren[i].setDefaultPressure(sensoren[i].getValue());
   }
 
   ledstripe.setup();
@@ -91,6 +96,10 @@ void setup() {
 
 void loop() {
 
+  for (int i = 0; i < 4; i++)
+  {
+    sensoren[i].update();
+  }
   waage.update();
 
   checkForSerialEvent();
@@ -117,7 +126,7 @@ void loop() {
   }
 
   float amount, mass;
-  int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub, cmd;
+  int motor, motorSpeed, ventil, state, pumpe, ledShow, wait, r, g, b, sub, cmd, pressure;
   switch (program)
   {
     case 1:
@@ -130,6 +139,7 @@ void loop() {
       {
         ledstripe.fillLed(strip.Color(getValue(command, ' ', 2), getValue(command, ' ', 3), getValue(command, ' ', 4)));
       }
+      program = 0;
       break;
     case 2:
       motor = getValue(command, ' ', 1);
@@ -145,6 +155,7 @@ void loop() {
         pumpen[motor]->setSpeed(-1 * motorSpeed);
         pumpen[motor]->backward();
       }
+      program = 0;
       break;
     case 3:
       ventil = getValue(command, ' ', 1);
@@ -157,6 +168,7 @@ void loop() {
       pumpe = getValue(command, ' ', 1);
       amount = getValue(command, ' ', 2);
       fillGlas(pumpen[pumpe - 1], amount);
+      program = 0;
       break;
     case 5:
       sub = getValue(command, ' ', 1);
@@ -225,6 +237,13 @@ void loop() {
         ledstripe.fasterBlinkOnOff(strip.Color(r, g, b), wait);
       }
       break;
+    case 7:
+      pressure = getValue(command, ' ', 1);
+      Serial.write(0x02);
+      Serial.print(sensoren[pressure].getValue());
+      Serial.write(0x03);
+      program = 0;
+      break;
     default:
       //do nothing
       break;
@@ -279,15 +298,25 @@ void fillGlas(Pumpe *pumpe, float amount)
   delay(100);
   long startTime = millis();
   long lastTime = startTime;
+  long lastSpeedCheck = startTime;
   float loadCell = waage.getValue();
+  float oldSpeedWeight = loadCell;
   float oldValue = loadCell;
+  float oldPressure = 0;
   bool finished = false;
   bool refill = false;
   float startValue = loadCell;
   float goalValue = startValue + amount;
   bool interrupt = false;
+  Drucksensor *sensor = nullptr;
+  if (pumpe->getType() == AIR)
+  {
+    sensor  = ((Luftpumpe*)pumpe)->sensor;
+    oldPressure = sensor->getValue();
+  }
 
   int interval = 6000;
+  int maxInterval = 10000;
 
   while (loadCell < goalValue)
   {
@@ -295,7 +324,6 @@ void fillGlas(Pumpe *pumpe, float amount)
     waage.update();
     if (pumpe->getType() == AIR)
     {
-      Drucksensor *sensor = &(((Luftpumpe*)pumpe)->sensor);
       sensor->update();
     };
 
@@ -305,30 +333,54 @@ void fillGlas(Pumpe *pumpe, float amount)
     ledstripe.setLed(glasLed, strip.Color(0, 0, 255));
 
     long actualTime = millis();
+    bool updateInterval = false;
 
 
     if (actualTime - lastTime >= interval)
     {
 
-      if (oldValue + 1 > loadCell)
+      if (pumpe->getType() == AIR)
+      {
+        if (oldPressure + 0.2 > sensor->getValue() && oldValue + 1 > loadCell)
+        {
+          refill = true;
+        }
+      }
+
+      else if (oldValue + 1 > loadCell)
       {
         refill = true;
       }
 
-      if (pumpe->getType() == AIR)
-      {
-        Drucksensor *sensor = &(((Luftpumpe*)pumpe)->sensor);
-        if (sensor->getValue() > sensor->getDefaultPressure() + 10)
-        {
-          refill = false;
-        }
-      }
-
-
       lastTime = actualTime;
       interval = 1000;
       oldValue = loadCell;
+      oldPressure = sensor->getValue();
     }
+
+    // Flow per time check for speed optimization
+    if (pumpe->getType() == AIR)
+    {
+      if (actualTime - lastSpeedCheck >= 1000 && loadCell > oldValue)
+      {
+        int actualSpeed = pumpe->getSpeed();
+        int change = loadCell - oldSpeedWeight;
+        //Check for 10g
+        if (change < 15 && actualSpeed < 200)
+        {
+          pumpe->setSpeed(actualSpeed += 5);
+        }
+        else if (change > 5 && actualSpeed > 100)
+        {
+          pumpe->setSpeed(actualSpeed -= 5);
+        }
+
+        lastSpeedCheck = actualTime;
+        oldSpeedWeight = loadCell;
+      }
+    }
+
+
 
     if (refill)
     {
