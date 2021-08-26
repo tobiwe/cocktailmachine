@@ -7,12 +7,6 @@ import serial
 
 import threading
 
-maintenance = TRUE
-
-## METHODS ##
-### GUI ###
-
-
 def orderButtonClicked(order):
     openPrductionWindow(order)
 
@@ -22,13 +16,11 @@ def commandButtonClicked():
 
 
 def exitButtonClicked():
-    #print("Programm wird beendet")
     sendCommand("1 2 0 0 0")
     ser.close()
     root.quit()
 
 def interruptButtonClicked():
-    print("Interrupt")
     global interrupt
     interrupt = True
     interruptButton.configure(state="disabled")
@@ -50,7 +42,7 @@ def pumpButtonClicked():
     window.geometry("1024x576")
     window.resizable(0, 0)
     window.wm_title('Pump')
-    root.attributes('-fullscreen', True)
+    window.attributes('-fullscreen', True)
 
     Grid.rowconfigure(window, 0, weight=1)
     Grid.rowconfigure(window, 1, weight=1)
@@ -59,6 +51,11 @@ def pumpButtonClicked():
     Grid.rowconfigure(window, 4, weight=1)
     Grid.rowconfigure(window, 5, weight=1)
     Grid.rowconfigure(window, 6, weight=1)
+    Grid.rowconfigure(window, 6, weight=1)
+    Grid.rowconfigure(window, 7, weight=1)
+    Grid.rowconfigure(window, 8, weight=1)
+    Grid.rowconfigure(window, 9, weight=1)
+    Grid.rowconfigure(window, 10, weight=1)
 
 
     Grid.columnconfigure(window, 0, weight=1)
@@ -67,8 +64,7 @@ def pumpButtonClicked():
     Grid.columnconfigure(window, 3, weight=1)
 
 
-
-    for i in range(0,6):
+    for i in range(0,10):
 
         TextLabel = Label(window, font=myFont, text="Motor "+str(i))
 
@@ -80,19 +76,72 @@ def pumpButtonClicked():
                                 bg="#ee0000", activebackground="#ee0000", command=lambda i=i: sendCommand("2 " + str(i) + " 0"))
 
         TextLabel.grid(row=i, column=0, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
-        if(maintenance):
-            Forward.grid(row=i, column=1, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
 
-        Backward.grid(row=i, column=2, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+        Forward.grid(row=i, column=1, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
+
+        if(i<6):
+            Backward.grid(row=i, column=2, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
         Stop.grid(row=i, column=3, padx=10, pady=10,  ipadx=50, ipady=50, sticky="nesw")
 
 
     BackButton = Button(window, font=myFont, text="Back", bg="#ee0000",
                         activebackground="#ee0000", command=window.destroy)
-    BackButton.grid(row=6, column=0, padx=10, pady=10,
+    BackButton.grid(row=10, column=0, padx=10, pady=10,
                     ipadx=50, ipady=50, sticky="nesw")
 
     window.attributes('-fullscreen', True)
+
+def addPassword(value):
+    global password
+    password+= value    
+
+def checkPassword():
+    global password
+    if(password == "300512"):
+        password = ""
+        settingsButtonClicked()
+    else:
+        password = ""
+
+def passwordWindow():
+    passwordWindow = Toplevel()
+    passwordWindow.geometry("1024x576")
+    passwordWindow.resizable(0, 0)
+    passwordWindow.wm_title('Password')
+    passwordWindow.attributes('-fullscreen', True)
+
+    Grid.rowconfigure(passwordWindow, 0, weight=1)
+    Grid.rowconfigure(passwordWindow, 1, weight=1)
+    Grid.rowconfigure(passwordWindow, 2, weight=1)
+    Grid.rowconfigure(passwordWindow, 3, weight=1)
+
+    Grid.columnconfigure(passwordWindow, 0, weight=1)
+    Grid.columnconfigure(passwordWindow, 1, weight=1)
+    Grid.columnconfigure(passwordWindow, 2, weight=1)
+
+    number = 1
+    for i in range (0,3):
+        for j in range (0,3):
+            NumberButton = Button(passwordWindow, font=myFont, text=number,
+                             bg="#ee0000", activebackground="#ee0000",command=lambda number=number: addPassword(str(number)))
+            NumberButton.grid(row=i, column=j, padx=10, pady=10,
+                         ipadx=50, ipady=50, sticky="nesw")
+            number = number + 1
+
+    NumberButton = Button(passwordWindow, font=myFont, text="0",
+                             bg="#ee0000", activebackground="#ee0000", command=lambda: addPassword("0"))
+    NumberButton.grid(row=3, column=0, padx=10, pady=10,
+                         ipadx=50, ipady=50, sticky="nesw")
+
+    OkButton = Button(passwordWindow, font=myFont, text="Ok", bg="#ee0000",
+                        activebackground="#ee0000", command=checkPassword)
+    OkButton.grid(row=3, column=1, padx=10, pady=10,
+                    ipadx=50, ipady=50, sticky="nesw")
+
+    BackButton = Button(passwordWindow, font=myFont, text="Back", bg="#ee0000",
+                        activebackground="#ee0000", command=passwordWindow.destroy)
+    BackButton.grid(row=3, column=2, padx=10, pady=10,
+                    ipadx=50, ipady=50, sticky="nesw")
 
 
 def settingsButtonClicked():
@@ -249,7 +298,7 @@ def updateProductionWindow(order, window):
     percent = "Gib mir dein Glas"
     weight = 0
 
-    while weight < 400 or weight > 900:
+    while weight < 400 or weight > 650:
         time.sleep(0.2)
         sendCommand("5 1")
         waitForAnser = True
@@ -299,7 +348,6 @@ def updateProductionWindow(order, window):
             waitForAnser = True
 
             while waitForAnser:
-                #print("Wait for answer")
                 result = receiveCommand()
                 if result == "refill":
                     global refill
@@ -313,7 +361,7 @@ def updateProductionWindow(order, window):
     sendCommand("6 5 500 0 255 0")
 
     weight = 400
-    while weight > 200:
+    while weight > 100:
         time.sleep(0.2)
         sendCommand("5 1")
         waitForAnser = True
@@ -329,8 +377,6 @@ def updateProductionWindow(order, window):
 
 
 def updateValue(window, process):
-    #print("Check finisehd")
-
     global refill
     global refillIngredient
     global refillWindowOpen
@@ -341,25 +387,18 @@ def updateValue(window, process):
     global isFinished
     if isFinished:
         window.destroy()
-       # print("finished true")
         isFinished = False
     else:
         labelText = str(percent)
-        # process.configure(text=labelText)
         productionCanvas.itemconfig(process, text=labelText)
         window.after(100, updateValue, window, process)
-       # print("finished false")
 
 # arduino commands
-
-
 def calibrate():
-    # print("Calibrate")
     sendCommand("5 3 302.00")
 
 
 def tare():
-    # print("Tare")
     sendCommand("5 2")
 
 
@@ -375,8 +414,6 @@ def sendCommand(command):
     ser.write(b'\x03')
     ser.flush()
     time.sleep(0.1)
-    #print("Send " + command + "...")
-
 
 def receiveCommand():
     line = ""
@@ -392,9 +429,7 @@ def receiveCommand():
             elif started:
                 line += chr(character)
 
-    # print(line)
     return line
-
 
 def createButton(x, y):
     drinkButton = canvas.create_image((x, y), image=transparent)
@@ -432,7 +467,6 @@ ser = serial.Serial("/dev/ttyACM0", 9600)
 time.sleep(2)
 
 if os.environ.get('DISPLAY', '') == '':
-    #print('no display found. Using :0.0')
     os.environ.__setitem__('DISPLAY', ':0.0')
 
 root = Tk()
@@ -470,6 +504,8 @@ refillIngredient = ""
 refillWindowOpen = False
 index = 1
 
+password = ""
+
 for drink in drinks:
 
     buttonText = drinks[number]["name"]  # + "\n("
@@ -503,7 +539,7 @@ for drink in drinks:
 
 settingsButton = canvas.create_image((1014, 566), anchor="se", image=settings)
 event = '<Button-1>'
-canvas.tag_bind(settingsButton, event, lambda e: settingsButtonClicked())
+canvas.tag_bind(settingsButton, event, lambda e: passwordWindow())
 sendCommand(showCommand)
 
 #root.attributes('-alpha', 0.5)
